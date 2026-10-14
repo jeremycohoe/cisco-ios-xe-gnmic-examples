@@ -1,0 +1,10 @@
+.env
+.DS_Store
+.gnmic.yaml
+.gnmic.yml
+*.pem
+*.crt
+*.cer
+*.key
+*.p12
+*.pfx
