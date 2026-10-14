@@ -91,8 +91,12 @@ gnmic subscribe \
   --heartbeat-interval 30s
 ```
 
-The on-change RPC opened, but the device emitted no update or sync response
-during the 10-second observation window. The stream was stopped with Ctrl+C.
+No `SubscribeResponse` was captured during the 10-second observation window—not
+even an initial update or sync response. The client was stopped with Ctrl+C.
+This capture does not establish that the device accepted the subscription or
+verify on-change event delivery. Repeat with a controlled change before relying
+on this subscription in an application.
+
 This is the complete observed output: no gNMI response block was received.
 Test with a path whose value changes, or wait for a real state change, before
 concluding that event updates are flowing. Periodic sampling works on this path.

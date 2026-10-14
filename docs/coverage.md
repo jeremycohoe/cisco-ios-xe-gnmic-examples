@@ -25,7 +25,7 @@ what has actually been observed so examples do not overstate coverage.
 | Set Update/Replace | Cisco native interface description | Local dry-run template | Update request rendering captured; no live Set |
 | Set Update | Cisco native VLAN name | Verified live | VLAN 899 created as `GNMI-LAB`, unassigned; full SetResponse and Get captured |
 | Subscribe periodic | OpenConfig interface state, 5 s sample | Verified | Initial response and repeated samples observed |
-| Subscribe on-change | OpenConfig interface state | RPC opened; no change event observed | Stable leaf did not change in observation window |
+| Subscribe on-change | OpenConfig interface state | Inconclusive | No SubscribeResponse (including initial sync) was captured in 10 seconds |
 | Subscribe once/poll/target-defined | Various | Not verified | Future examples |
 
 The examples are starter recipes, not every possible operation/model/encoding

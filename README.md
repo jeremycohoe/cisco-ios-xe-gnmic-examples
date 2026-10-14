@@ -103,7 +103,7 @@ gnmic capabilities --format json |
 ```
 
 <details>
-<summary>Capabilities result: eight gNMI, CPU, interface cfg, MDT, memory, environment, and NTP models are advertised — expand excerpt</summary>
+<summary>Eight relevant advertised Cisco models — expand excerpt</summary>
 
 ```text
       "name": "Cisco-IOS-XE-gnmi-cfg",
@@ -125,6 +125,9 @@ gnmic capabilities --format json |
 ```
 
 </details>
+
+This is a selected excerpt, not the full Capabilities response. The table above
+records which of these models have been queried and which remain candidates.
 
 ## Get examples and full responses
 
@@ -278,7 +281,7 @@ gnmic get \
 ```
 
 <details>
-<summary>1 response messages captured — expand full response</summary>
+<summary>ports = {} (no ports assigned) — expand full response</summary>
 
 ```json
 [
@@ -472,7 +475,10 @@ gnmic get \
 ## Set examples and full responses
 
 Set changes configuration. Save the original value before changing it, use a
-narrow leaf path, and verify with Get afterward.
+narrow leaf path, and verify with Get afterward. Cisco treats the operations in
+one SetRequest as a transaction: if a subordinate operation fails, the request
+is rejected and rolled back. A successful SetResponse is still followed by a
+Get here so the example checks the resulting state.
 
 ### Hostname Update
 
@@ -530,7 +536,9 @@ The verification Get returned `GNMIC-LAB`:
 
 ### Hostname Replace
 
-Replace was tested at the same leaf with a second temporary value:
+Replace was tested at the same hostname leaf with a second temporary value.
+The path is deliberately narrow: replacing a leaf does not replace the full
+`native` configuration subtree.
 
 ```bash
 gnmic set --replace \
@@ -774,9 +782,12 @@ gnmic subscribe \
   --heartbeat-interval 30s
 ```
 
-The RPC opened, but the device emitted no update or sync response during the
-10-second observation window. The stream was stopped with Ctrl+C. No response
-block was received, so event delivery on this stable leaf remains unverified.
+No `SubscribeResponse` was captured during the 10-second observation window—not
+even an initial update or sync response. The client was stopped with Ctrl+C.
+This capture does not establish that the device accepted the subscription, and
+it does not verify on-change event delivery. Confirm the target's support and
+repeat with a controlled change before relying on this subscription in an
+application.
 
 Other modes include `--mode once`, `--mode poll`, and
 `--stream-mode target_defined`; these have not been verified on this device.
