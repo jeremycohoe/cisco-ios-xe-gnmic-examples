@@ -1,0 +1,4 @@
+{"source":"<DEVICE_ADDRESS>:9339","subscription-name":"default-1792013742","time":"2026-10-14T14:27:34.431902-07:00","updates":[{"Path":"rfc7951:Cisco-IOS-XE-vlan-oper:vlans/vlan[id=899]/name","values":{"Cisco-IOS-XE-vlan-oper:vlans/vlan/name":"GNMI-LAB"}}]}
+{"sync-response":true}
+{"source":"<DEVICE_ADDRESS>:9339","subscription-name":"default-1792013742","time":"2026-10-14T14:29:54.562143-07:00","updates":[{"Path":"rfc7951:Cisco-IOS-XE-vlan-oper:vlans/vlan[id=899]/name","values":{"Cisco-IOS-XE-vlan-oper:vlans/vlan/name":"VLAN0899"}}]}
+{"source":"<DEVICE_ADDRESS>:9339","subscription-name":"default-1792013742","time":"2026-10-14T14:30:00.060026-07:00","updates":[{"Path":"rfc7951:Cisco-IOS-XE-vlan-oper:vlans/vlan[id=899]/name","values":{"Cisco-IOS-XE-vlan-oper:vlans/vlan/name":"GNMI-LAB-EVENT"}}]}
