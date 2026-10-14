@@ -1,5 +1,10 @@
 # Set configuration
 
+Run the `gnmi()` connection setup in the [primary README](../README.md#connect-to-the-switch)
+in the same terminal before using these commands. Get and record the current
+value first. Compare the SetResponse operation and path, then run Get to
+confirm the resulting value. Response timestamps and device values will vary.
+
 This page records live Set requests. The hostname and VLAN-name Update/Replace,
 OpenConfig interface description Update/Replace/Delete, IETF interface
 description Update/Replace/Delete, and OpenConfig `config/enabled` Update were
@@ -40,9 +45,9 @@ IFACE='TwoGigabitEthernet4/0/1'
 TEST_DESCRIPTION='GNMI-LAB-TEST'
 DESC_PATH="openconfig:/interfaces/interface[name=${IFACE}]/config/description"
 
-gnmic set --update "${DESC_PATH}:::string:::${TEST_DESCRIPTION}"
-gnmic set --replace "${DESC_PATH}:::string:::${TEST_DESCRIPTION}"
-gnmic set --delete "${DESC_PATH}"
+gnmi set --update "${DESC_PATH}:::string:::${TEST_DESCRIPTION}"
+gnmi set --replace "${DESC_PATH}:::string:::${TEST_DESCRIPTION}"
+gnmi set --delete "${DESC_PATH}"
 ```
 
 ## IETF interface description
@@ -56,9 +61,9 @@ IFACE='TwoGigabitEthernet4/0/1'
 TEST_DESCRIPTION='GNMI-LAB-TEST'
 DESC_PATH="rfc7951:/ietf-interfaces:interfaces/interface[name=${IFACE}]/description"
 
-gnmic set --update "${DESC_PATH}:::string:::${TEST_DESCRIPTION}"
-gnmic set --replace "${DESC_PATH}:::string:::${TEST_DESCRIPTION}"
-gnmic set --delete "${DESC_PATH}"
+gnmi set --update "${DESC_PATH}:::string:::${TEST_DESCRIPTION}"
+gnmi set --replace "${DESC_PATH}:::string:::${TEST_DESCRIPTION}"
+gnmi set --delete "${DESC_PATH}"
 ```
 
 The complete sanitized SetResponse and verification Get sequence is in
@@ -71,7 +76,7 @@ retained because the owner approved it for this example.
 Command:
 
 ```bash
-gnmic set --timeout 45s --update \
+gnmi set --timeout 45s --update \
   'rfc7951:/Cisco-IOS-XE-native:native/vlan/Cisco-IOS-XE-vlan:vlan-list[id=899]/name:::string:::GNMI-LAB'
 ```
 
@@ -169,7 +174,7 @@ envelopes; timestamps and response structure are retained.
 Command:
 
 ```bash
-gnmic set --update \
+gnmi set --update \
   'rfc7951:/Cisco-IOS-XE-native:native/hostname:::string:::GNMIC-LAB'
 ```
 
@@ -214,7 +219,7 @@ Verification Get returned `GNMIC-LAB`:
 Command:
 
 ```bash
-gnmic set --replace \
+gnmi set --replace \
   'rfc7951:/Cisco-IOS-XE-native:native/hostname:::string:::GNMIC-REPLACE-DEMO'
 ```
 
@@ -262,7 +267,7 @@ succeeded.
 Rollback command, using the value saved before the first Set:
 
 ```bash
-gnmic set --update \
+gnmi set --update \
   "${HOSTNAME_PATH}:::string:::${ORIGINAL_HOSTNAME}"
 ```
 

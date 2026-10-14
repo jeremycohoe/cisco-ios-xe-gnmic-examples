@@ -8,6 +8,7 @@ detail and reusable helpers.
 ## Contents
 
 - [Connect and discover](#connect-to-the-switch)
+  - [Run and manually validate examples](#run-and-manually-validate-examples)
   - [Supported models and encodings](#what-the-switch-supports)
   - [MDT path support for subscriptions](#mdt-subscription-capability-results)
   - [Quick navigation by operation and model](#quick-navigation-by-operation-and-model)
@@ -66,23 +67,64 @@ username, then enter the password at the prompt so it does not enter shell
 history:
 
 ```bash
-export GNMIC_ADDRESS="192.0.2.10:9339"
-export GNMIC_USERNAME="admin"
-export GNMIC_SKIP_VERIFY="true"
+export GNMIC_ADDRESS="REPLACE_WITH_SWITCH_IP:9339"
+export GNMIC_USERNAME="REPLACE_WITH_USERNAME"
 read -rsp "gNMI password: " GNMIC_PASSWORD
 printf '\n'
 export GNMIC_PASSWORD
+
+# Run this setup once in the same Bash session as the examples.
+gnmi() {
+  command gnmic \
+    --address "$GNMIC_ADDRESS" \
+    --username "$GNMIC_USERNAME" \
+    --password "$GNMIC_PASSWORD" \
+    --skip-verify \
+    "$@"
+}
 ```
 
-The address above is a documentation placeholder. Use your switch's reachable
-address. Clear the password from the shell when finished with
-`unset GNMIC_PASSWORD`.
+Replace the address and username. Keep port `9339` only if that is the port
+configured on your device. `--skip-verify` is included for the self-signed
+`gnxi secure-init` lab setup documented here; it encrypts the connection but
+does not verify the server identity. Run this only on a trusted lab network.
+The hidden prompt keeps the password out of shell history. Clear it when
+finished with `unset GNMIC_PASSWORD`.
 
 Check the connection and advertised models:
 
 ```bash
-gnmic capabilities
+gnmi capabilities
 ```
+
+## Run and manually validate examples
+
+Run the setup above first, then copy a command block into the same Bash
+session. For the shut/no-shut subscription example, run the setup block in
+both terminals because the stream and Set commands run separately.
+
+The expanded responses below are sanitized captures from one Catalyst 9300.
+They are reference responses, not promised output for every IOS XE version or
+device state. When comparing your response, ignore the source address,
+timestamps, subscription name, and any redacted values. Check the requested
+path, operation, value type, and state instead. You should see the same values
+only when your device has the same configuration and operational state.
+
+| Command | Check in your response | Reference example |
+|---|---|---|
+| `capabilities` | Your target answers and advertises the model and encoding needed by the path. Model revisions can differ. | [Supported models](#what-the-switch-supports) |
+| `get` | The response contains the requested path under `updates[].Path`; `updates[].values` contains the leaf or object. Compare value types and state, not timestamps. | [Get examples](#get-examples-and-full-responses) |
+| `set` | `results[].operation` matches Update, Replace, or Delete and `results[].path` matches the request. Then run Get and verify the resulting value. A SetResponse alone does not prove the final state. | [Set examples](#set-examples-and-full-responses) |
+| `subscribe --mode once` | Initial state is returned and the command exits. Some targets include a sync response; this captured ONCE response did not. | [ONCE example](#once-and-target-defined-stream) |
+| `subscribe --stream-mode sample` | Initial update and sync response arrive; later updates recur near the configured interval. | [Periodic sampling](#periodic-sampling) |
+| `subscribe --stream-mode on_change` | Initial state arrives, then another update only after the selected leaf changes. Support is path-specific; check MDT capabilities first. | [On-change example](#on-change) |
+| `subscribe --mode poll` | Initial state and sync arrive; each manual poll returns the current value. | [POLL example](#poll-subscription) |
+
+The complete sanitized response envelopes are in the expandable sections and
+linked capture files. If a response differs, first compare the device's live
+Capabilities, the exact path and list key, the current interface/VLAN state,
+and the encoding. Do not copy a Set value blindly: use an approved test object
+and verify the rollback path before making a live change.
 
 ## What the switch supports
 
@@ -654,7 +696,7 @@ interface description model.
 To filter Capabilities down to several relevant advertised models:
 
 ```bash
-gnmic capabilities --format json |
+gnmi capabilities --format json |
   rg -A 1 '"name": "Cisco-IOS-XE-(gnmi-cfg|process-cpu-oper|mdt-cfg|mdt-capabilities-oper|yang-interfaces-cfg|memory-oper|process-memory-oper|environment-oper|ntp-oper)"'
 ```
 
@@ -706,7 +748,7 @@ on-change, so use periodic subscriptions for those trees.
 Read the tree with:
 
 ```bash
-gnmic get \
+gnmi get \
   --path 'rfc7951:/Cisco-IOS-XE-mdt-capabilities-oper:mdt-capabilities-oper-data' \
   --encoding json_ietf
 ```
@@ -1464,8 +1506,12 @@ redacted where they appeared. The timestamps and response shape are retained.
 
 ### Cisco native hostname
 
+Expected: one Get notification whose path ends in `native/hostname` and whose
+value is a string. Your hostname will differ unless your device has the same
+configured hostname as the reference switch.
+
 ```bash
-gnmic get \
+gnmi get \
   --path 'rfc7951:/Cisco-IOS-XE-native:native/hostname' \
   --encoding json_ietf
 ```
@@ -1496,10 +1542,12 @@ gnmic get \
 ### Cisco native interface description
 
 Replace `MEMBER/PORT` with an interface on your device.
+Expected: the path identifies the requested interface description. An unset
+description may be returned as an empty string, as in the reference response.
 
 ```bash
 IFACE='MEMBER/PORT'
-gnmic get \
+gnmi get \
   --path "rfc7951:/Cisco-IOS-XE-native:native/interface/GigabitEthernet[name=${IFACE}]/description" \
   --encoding json_ietf
 ```
@@ -1530,10 +1578,13 @@ gnmic get \
 ### Cisco native VLAN configuration
 
 VLAN 899 was created for this example. This Get reads its configured list entry.
+For another device, set `VLAN_ID` to a VLAN that exists there. Expected: the
+response path includes that ID and the returned object includes its `id` and
+`name` leaves; the name is device-specific.
 
 ```bash
 VLAN_ID='899'
-gnmic get \
+gnmi get \
   --path "rfc7951:/Cisco-IOS-XE-native:native/vlan/Cisco-IOS-XE-vlan:vlan-list[id=${VLAN_ID}]" \
   --encoding json_ietf
 ```
@@ -1566,9 +1617,13 @@ gnmic get \
 
 ### Cisco VLAN operational state and ports
 
+Set `VLAN_ID` to an existing VLAN on your switch. Expected values depend on
+whether the VLAN is active and has member ports.
+
 ```bash
-gnmic get \
-  --path 'rfc7951:/Cisco-IOS-XE-vlan-oper:vlans/vlan[id=899]' \
+VLAN_ID='899'
+gnmi get \
+  --path "rfc7951:/Cisco-IOS-XE-vlan-oper:vlans/vlan[id=${VLAN_ID}]" \
   --encoding json_ietf
 ```
 
@@ -1602,8 +1657,9 @@ gnmic get \
 Check port membership separately:
 
 ```bash
-gnmic get \
-  --path 'rfc7951:/Cisco-IOS-XE-vlan-oper:vlans/vlan[id=899]/ports' \
+VLAN_ID='899'
+gnmi get \
+  --path "rfc7951:/Cisco-IOS-XE-vlan-oper:vlans/vlan[id=${VLAN_ID}]/ports" \
   --encoding json_ietf
 ```
 
@@ -1634,7 +1690,7 @@ gnmic get \
 
 ```bash
 VLAN_ID='REPLACE_WITH_TEST_VLAN'
-gnmic get \
+gnmi get \
   --path "rfc7951:/Cisco-IOS-XE-interfaces-oper:interfaces/interface[name=Vlan${VLAN_ID}]/oper-status" \
   --encoding json_ietf
 ```
@@ -1666,7 +1722,7 @@ gnmic get \
 
 ```bash
 VLAN_ID='REPLACE_WITH_TEST_VLAN'
-gnmic get \
+gnmi get \
   --path "openconfig:/interfaces/interface[name=Vlan${VLAN_ID}]/state/oper-status" \
   --encoding json_ietf
 ```
@@ -1701,7 +1757,7 @@ This device exposes operational interface state under the older
 
 ```bash
 VLAN_ID='REPLACE_WITH_TEST_VLAN'
-gnmic get \
+gnmi get \
   --path "rfc7951:/ietf-interfaces:interfaces-state/interface[name=Vlan${VLAN_ID}]/oper-status" \
   --encoding json_ietf
 ```
@@ -1737,7 +1793,7 @@ port or TLS/authentication controls over the same session without a planned
 recovery path; a change can interrupt access.
 
 ```bash
-gnmic get \
+gnmi get \
   --path 'rfc7951:/Cisco-IOS-XE-gnmi-cfg:gnmi-cfg-data/config/secure-port' \
   --encoding json_ietf
 ```
@@ -1774,7 +1830,7 @@ configuration was changed.
 
 ```bash
 SUBSCRIPTION_ID='REPLACE_WITH_SUBSCRIPTION_ID'
-gnmic get \
+gnmi get \
   --path "rfc7951:/Cisco-IOS-XE-mdt-cfg:mdt-config-data/mdt-subscription[subscription-id=${SUBSCRIPTION_ID}]/base/stream" \
   --encoding json_ietf
 ```
@@ -1810,7 +1866,7 @@ gnmic get \
 five-second CPU utilization leaf rather than the full process table:
 
 ```bash
-gnmic get \
+gnmi get \
   --path 'rfc7951:/Cisco-IOS-XE-process-cpu-oper:cpu-usage/cpu-utilization/five-seconds' \
   --encoding json_ietf
 ```
@@ -1845,7 +1901,7 @@ The following read-only models are useful examples beyond interfaces and CPU. Op
 ### Cisco memory operational Get
 
 ```bash
-gnmic get \
+gnmi get \
   --path 'rfc7951:/Cisco-IOS-XE-memory-oper:memory-statistics' \
   --encoding json_ietf
 ```
@@ -1905,7 +1961,7 @@ gnmic get \
 ### Cisco environment sensor Get
 
 ```bash
-gnmic get \
+gnmi get \
   --path 'rfc7951:/Cisco-IOS-XE-environment-oper:environment-sensors' \
   --encoding json_ietf
 ```
@@ -2908,7 +2964,7 @@ gnmic get \
 ### Cisco NTP operational Get
 
 ```bash
-gnmic get \
+gnmi get \
   --path 'rfc7951:/Cisco-IOS-XE-ntp-oper:ntp-oper-data/ntp-status-info' \
   --encoding json_ietf
 ```
@@ -3016,9 +3072,17 @@ First Get and save the current hostname for rollback. The lab hostname was
 temporarily updated to `GNMIC-LAB`:
 
 ```bash
-gnmic set --update \
-  'rfc7951:/Cisco-IOS-XE-native:native/hostname:::string:::GNMIC-LAB'
+HOSTNAME_PATH='rfc7951:/Cisco-IOS-XE-native:native/hostname'
+ORIGINAL_HOSTNAME='REPLACE_WITH_VALUE_FROM_INITIAL_GET'
+TEST_HOSTNAME='GNMIC-LAB' # change to a temporary value for your device
+gnmi get --path "${HOSTNAME_PATH}" --encoding json_ietf # record this value for rollback
+gnmi set --update "${HOSTNAME_PATH}:::string:::${TEST_HOSTNAME}"
+gnmi get --path "${HOSTNAME_PATH}" --encoding json_ietf
 ```
+
+Expected: the SetResponse has `operation: UPDATE` and the hostname path. The
+following Get should return the exact value in `TEST_HOSTNAME`. Save the
+original hostname first and run the rollback Get after restoring it.
 
 <details>
 <summary>UPDATE acknowledged: rfc7951:Cisco-IOS-XE-native:native/hostname — expand full response</summary>
@@ -3069,9 +3133,16 @@ The verification Get returned `GNMIC-LAB`:
 Replace was tested at the same leaf with a second temporary value:
 
 ```bash
-gnmic set --replace \
-  'rfc7951:/Cisco-IOS-XE-native:native/hostname:::string:::GNMIC-REPLACE-DEMO'
+HOSTNAME_PATH='rfc7951:/Cisco-IOS-XE-native:native/hostname'
+ORIGINAL_HOSTNAME='REPLACE_WITH_VALUE_FROM_INITIAL_GET'
+TEST_HOSTNAME='GNMIC-REPLACE-DEMO' # change to a temporary value for your device
+gnmi get --path "${HOSTNAME_PATH}" --encoding json_ietf # record this value for rollback
+gnmi set --replace "${HOSTNAME_PATH}:::string:::${TEST_HOSTNAME}"
+gnmi get --path "${HOSTNAME_PATH}" --encoding json_ietf
 ```
+
+Expected: `operation: REPLACE`, followed by a Get whose hostname equals
+`TEST_HOSTNAME`. Replace is scoped to this single leaf.
 
 <details>
 <summary>REPLACE acknowledged: rfc7951:Cisco-IOS-XE-native:native/hostname — expand full response</summary>
@@ -3117,15 +3188,15 @@ The verification Get returned `GNMIC-REPLACE-DEMO`:
 
 </details>
 
-Set these variables using
-the values saved before the test, then restore the original hostname with
-Update:
+After either operation, restore the original hostname with Update. Set the
+variable below to the value recorded by the initial Get:
 
 ```bash
 HOSTNAME_PATH='rfc7951:/Cisco-IOS-XE-native:native/hostname'
-ORIGINAL_HOSTNAME='<COPY_VALUE_FROM_INITIAL_GET>'
-gnmic set --update \
+ORIGINAL_HOSTNAME='REPLACE_WITH_VALUE_FROM_INITIAL_GET'
+gnmi set --update \
   "${HOSTNAME_PATH}:::string:::${ORIGINAL_HOSTNAME}"
+gnmi get --path "${HOSTNAME_PATH}" --encoding json_ietf
 ```
 
 The rollback SetResponse was successful:
@@ -3177,11 +3248,21 @@ The final Get confirmed the original value; it is redacted here:
 ### Create or name a VLAN with Update
 
 VLAN 899 was unused, so it was created as `GNMI-LAB`. This live Set succeeded:
+For another switch, choose an ID confirmed unused and keep the VLAN name
+temporary and unique. The response path must contain your chosen ID; the Get
+must show your chosen name. Do not assume VLAN 899 is available.
 
 ```bash
-gnmic set --timeout 45s --update \
-  'rfc7951:/Cisco-IOS-XE-native:native/vlan/Cisco-IOS-XE-vlan:vlan-list[id=899]/name:::string:::GNMI-LAB'
+VLAN_ID='899' # replace only after confirming this ID is unused
+VLAN_NAME='GNMI-LAB'
+VLAN_NAME_PATH="rfc7951:/Cisco-IOS-XE-native:native/vlan/Cisco-IOS-XE-vlan:vlan-list[id=${VLAN_ID}]/name"
+gnmi set --timeout 45s --update "${VLAN_NAME_PATH}:::string:::${VLAN_NAME}"
+gnmi get --path "${VLAN_NAME_PATH}" --encoding json_ietf
 ```
+
+Expected: `operation: UPDATE` on `VLAN_NAME_PATH`, followed by a Get returning
+`VLAN_NAME`. The captured response uses ID 899 and `GNMI-LAB`; your values will
+match only if you choose those same values.
 
 <details>
 <summary>UPDATE acknowledged: rfc7951:Cisco-IOS-XE-native:native/vlan/Cisco-IOS-XE-vlan:vlan-list[id=899]/name — expand full response</summary>
@@ -3245,9 +3326,15 @@ Get returned `GNMI-LAB`. This verified Replace without changing the VLAN.
 Delete was not sent because it would remove the lab VLAN.
 
 ```bash
-gnmic set --replace \
-  'rfc7951:/Cisco-IOS-XE-native:native/vlan/Cisco-IOS-XE-vlan:vlan-list[id=899]/name:::string:::GNMI-LAB'
+VLAN_ID='899' # use an existing test VLAN
+VLAN_NAME='GNMI-LAB' # set to its current name to exercise Replace unchanged
+VLAN_NAME_PATH="rfc7951:/Cisco-IOS-XE-native:native/vlan/Cisco-IOS-XE-vlan:vlan-list[id=${VLAN_ID}]/name"
+gnmi set --replace "${VLAN_NAME_PATH}:::string:::${VLAN_NAME}"
+gnmi get --path "${VLAN_NAME_PATH}" --encoding json_ietf
 ```
+
+Expected: `operation: REPLACE`, then a Get with the same VLAN name. This
+example uses the existing value so it does not rename the VLAN.
 
 The complete sanitized SetResponse and Get are in
 [vlan-name-replace.ndjson](captures/vlan-name-replace.ndjson).
@@ -3255,14 +3342,31 @@ The complete sanitized SetResponse and Get are in
 OpenConfig interface description: verified live on the user-approved connected
 port. The original description was empty. Update and Replace wrote
 `GNMI-LAB-TEST`; Delete restored the empty value, with a Get after every Set.
+For reuse, Get and save the current description first. The restoration below
+uses Update if the original description was non-empty; when it was empty, the
+Delete returns it to the captured baseline. After each step, compare Get with
+the expected value.
 
 ```bash
 IFACE='TwoGigabitEthernet4/0/1'
 TEST_DESCRIPTION='GNMI-LAB-TEST'
+ORIGINAL_DESCRIPTION='REPLACE_WITH_INITIAL_VALUE' # copy initial Get value; use '' if empty
 OC_DESC="openconfig:/interfaces/interface[name=${IFACE}]/config/description"
-gnmic set --update "${OC_DESC}:::string:::${TEST_DESCRIPTION}"
-gnmic set --replace "${OC_DESC}:::string:::${TEST_DESCRIPTION}"
-gnmic set --delete "${OC_DESC}"
+gnmi get --path "${OC_DESC}" --encoding json_ietf # copy value into ORIGINAL_DESCRIPTION
+if [[ "$ORIGINAL_DESCRIPTION" == 'REPLACE_WITH_INITIAL_VALUE' ]]; then
+  echo 'Set ORIGINAL_DESCRIPTION from the Get above, then run this block again.' >&2
+else
+  gnmi set --update "${OC_DESC}:::string:::${TEST_DESCRIPTION}"
+  gnmi get --path "${OC_DESC}" --encoding json_ietf # expected: TEST_DESCRIPTION
+  gnmi set --replace "${OC_DESC}:::string:::${TEST_DESCRIPTION}"
+  gnmi get --path "${OC_DESC}" --encoding json_ietf # expected: TEST_DESCRIPTION
+  gnmi set --delete "${OC_DESC}"
+  gnmi get --path "${OC_DESC}" --encoding json_ietf # expected: original empty value
+  if [[ -n "$ORIGINAL_DESCRIPTION" ]]; then
+    gnmi set --update "${OC_DESC}:::string:::${ORIGINAL_DESCRIPTION}"
+  fi
+  gnmi get --path "${OC_DESC}" --encoding json_ietf # confirm original value restored
+fi
 ```
 
 IETF `interfaces/interface/description` was verified with the same three live
@@ -3271,10 +3375,23 @@ operations and temporary value:
 ```bash
 IFACE='TwoGigabitEthernet4/0/1'
 TEST_DESCRIPTION='GNMI-LAB-TEST'
+ORIGINAL_DESCRIPTION='REPLACE_WITH_INITIAL_VALUE' # copy initial Get value; use '' if empty
 IETF_DESC="rfc7951:/ietf-interfaces:interfaces/interface[name=${IFACE}]/description"
-gnmic set --update "${IETF_DESC}:::string:::${TEST_DESCRIPTION}"
-gnmic set --replace "${IETF_DESC}:::string:::${TEST_DESCRIPTION}"
-gnmic set --delete "${IETF_DESC}"
+gnmi get --path "${IETF_DESC}" --encoding json_ietf # copy value into ORIGINAL_DESCRIPTION
+if [[ "$ORIGINAL_DESCRIPTION" == 'REPLACE_WITH_INITIAL_VALUE' ]]; then
+  echo 'Set ORIGINAL_DESCRIPTION from the Get above, then run this block again.' >&2
+else
+  gnmi set --update "${IETF_DESC}:::string:::${TEST_DESCRIPTION}"
+  gnmi get --path "${IETF_DESC}" --encoding json_ietf # expected: TEST_DESCRIPTION
+  gnmi set --replace "${IETF_DESC}:::string:::${TEST_DESCRIPTION}"
+  gnmi get --path "${IETF_DESC}" --encoding json_ietf # expected: TEST_DESCRIPTION
+  gnmi set --delete "${IETF_DESC}"
+  gnmi get --path "${IETF_DESC}" --encoding json_ietf # expected: original empty value
+  if [[ -n "$ORIGINAL_DESCRIPTION" ]]; then
+    gnmi set --update "${IETF_DESC}:::string:::${ORIGINAL_DESCRIPTION}"
+  fi
+  gnmi get --path "${IETF_DESC}" --encoding json_ietf # confirm original value restored
+fi
 ```
 
 The `interfaces-state` tree is the IETF operational tree and cannot accept
@@ -3327,8 +3444,8 @@ admin status changed to `UP`, then back to `DOWN`.
 ```bash
 IFACE='MEMBER/PORT'
 ENABLE_PATH="openconfig:/interfaces/interface[name=${IFACE}]/config/enabled"
-gnmic set --update "${ENABLE_PATH}:::bool:::true"
-gnmic set --update "${ENABLE_PATH}:::bool:::false"
+gnmi set --update "${ENABLE_PATH}:::bool:::true"
+gnmi set --update "${ENABLE_PATH}:::bool:::false"
 ```
 
 <details>
@@ -3368,7 +3485,7 @@ updates at a 5-second sample interval:
 
 ```bash
 VLAN_ID='REPLACE_WITH_TEST_VLAN'
-gnmic subscribe \
+gnmi subscribe \
   --path "openconfig:/interfaces/interface[name=Vlan${VLAN_ID}]/state/oper-status" \
   --mode stream \
   --stream-mode sample \
@@ -3445,7 +3562,7 @@ response, and repeated `up` updates for keyed interface
 
 ```bash
 IFACE='TwoGigabitEthernet4/0/1'
-gnmic subscribe \
+gnmi subscribe \
   --path "rfc7951:/ietf-interfaces:interfaces-state/interface[name=${IFACE}]/oper-status" \
   --mode stream \
   --stream-mode sample \
@@ -3477,7 +3594,7 @@ then closed. This CLI transcript contains a timestamp-only response and no
 
 ```bash
 IFACE='TwoGigabitEthernet4/0/1'
-gnmic subscribe \
+gnmi subscribe \
   --path "rfc7951:/Cisco-IOS-XE-interfaces-oper:interfaces/interface[name=${IFACE}]/admin-status" \
   --mode once
 ```
@@ -3508,8 +3625,9 @@ when adapting the example. The complete sanitized output is in
 ### On-change
 
 ```bash
-gnmic subscribe \
-  --path 'rfc7951:/Cisco-IOS-XE-vlan-oper:vlans/vlan[id=899]/name' \
+VLAN_ID='899'
+gnmi subscribe \
+  --path "rfc7951:/Cisco-IOS-XE-vlan-oper:vlans/vlan[id=${VLAN_ID}]/name" \
   --mode stream \
   --stream-mode on_change
 ```
@@ -3549,8 +3667,8 @@ to the full interface name used by OpenConfig and Cisco interfaces-oper:
 
 ```bash
 IFACE='TwoGigabitEthernet4/0/1'
-gnmic -a "$GNMIC_ADDRESS" -u "$GNMIC_USERNAME" -p "$GNMIC_PASSWORD" \
-  --skip-verify --encoding json_ietf subscribe \
+gnmi subscribe \
+  --encoding json_ietf \
   --path "rfc7951:/Cisco-IOS-XE-interfaces-oper:interfaces/interface[name=${IFACE}]/admin-status" \
   --mode stream \
   --stream-mode on_change
@@ -3559,12 +3677,15 @@ gnmic -a "$GNMIC_ADDRESS" -u "$GNMIC_USERNAME" -p "$GNMIC_PASSWORD" \
 ```bash
 IFACE='TwoGigabitEthernet4/0/1'
 ENABLE_PATH="openconfig:/interfaces/interface[name=${IFACE}]/config/enabled"
-gnmic -a "$GNMIC_ADDRESS" -u "$GNMIC_USERNAME" -p "$GNMIC_PASSWORD" \
-  --skip-verify --encoding json_ietf set \
+gnmi get --path "${ENABLE_PATH}" --encoding json_ietf # confirm current value is true
+gnmi set \
+  --encoding json_ietf \
   --update "${ENABLE_PATH}:::bool:::false" # shut
-gnmic -a "$GNMIC_ADDRESS" -u "$GNMIC_USERNAME" -p "$GNMIC_PASSWORD" \
-  --skip-verify --encoding json_ietf set \
+gnmi get --path "${ENABLE_PATH}" --encoding json_ietf # expected: false
+gnmi set \
+  --encoding json_ietf \
   --update "${ENABLE_PATH}:::bool:::true" # no shut; restore baseline
+gnmi get --path "${ENABLE_PATH}" --encoding json_ietf # expected: true
 ```
 
 The output below is the captured stream. The device address is redacted; the
@@ -3606,7 +3727,7 @@ returns the current value. Press Ctrl+C to exit.
 
 ```bash
 IFACE='MEMBER/PORT'
-gnmic subscribe \
+gnmi subscribe \
   --path "rfc7951:/Cisco-IOS-XE-interfaces-oper:interfaces/interface[name=${IFACE}]/admin-status" \
   --mode poll
 ```
@@ -3669,7 +3790,7 @@ complete interface inventory. This keyed form was verified on
 
 ```bash
 IFACE='TwoGigabitEthernet4/0/1'
-gnmic subscribe \
+gnmi subscribe \
   --path "/interfaces/interface[name=${IFACE}]/state/cpu" \
   --mode poll
 ```

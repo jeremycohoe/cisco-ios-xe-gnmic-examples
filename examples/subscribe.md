@@ -1,6 +1,9 @@
 # Subscribe to telemetry
 
-These examples use the connection settings in the primary README. Full
+These examples use the `gnmi()` Bash helper in the primary README. Run its
+[connection setup](../README.md#connect-to-the-switch) in the same terminal
+before copying these commands. Compare the path and mode behavior; timestamps,
+subscription names, and live values may differ. Full
 response transcripts and output summaries are in the
 [README Subscribe section](../README.md#subscribe-examples-and-full-responses).
 Stop streaming commands with `Ctrl+C`.
@@ -12,7 +15,7 @@ an initial update, sync response, and repeated five-second samples:
 
 ```bash
 VLAN_ID='REPLACE_WITH_TEST_VLAN'
-gnmic subscribe \
+gnmi subscribe \
   --path "openconfig:/interfaces/interface[name=Vlan${VLAN_ID}]/state/oper-status" \
   --mode stream \
   --stream-mode sample \
@@ -33,7 +36,7 @@ updates. Full sanitized output:
 
 ```bash
 IFACE='MEMBER/PORT'
-gnmic subscribe \
+gnmi subscribe \
   --path "rfc7951:/ietf-interfaces:interfaces-state/interface[name=${IFACE}]/oper-status" \
   --mode stream \
   --stream-mode sample \
@@ -52,7 +55,7 @@ returned `if-state-up` and a timestamp-only response. The capture has no
 
 ```bash
 IFACE='TwoGigabitEthernet4/0/1'
-gnmic subscribe \
+gnmi subscribe \
   --path "rfc7951:/Cisco-IOS-XE-interfaces-oper:interfaces/interface[name=${IFACE}]/admin-status" \
   --mode once
 ```
@@ -67,7 +70,7 @@ interrupted. This does not prove the target-defined mode is unsupported.
 
 ```bash
 IFACE='TwoGigabitEthernet4/0/1'
-gnmic subscribe \
+gnmi subscribe \
   --path "rfc7951:/Cisco-IOS-XE-interfaces-oper:interfaces/interface[name=${IFACE}]/admin-status" \
   --mode stream \
   --stream-mode target-defined
@@ -80,7 +83,7 @@ The C9300's MDT capability response permits on-change below
 update and sync response:
 
 ```bash
-gnmic subscribe \
+gnmi subscribe \
   --path 'rfc7951:/Cisco-IOS-XE-vlan-oper:vlans/vlan[id=899]/name' \
   --mode stream \
   --stream-mode on_change
@@ -103,8 +106,8 @@ The initial state was enabled/admin UP/oper UP.
 
 ```bash
 IFACE='TwoGigabitEthernet4/0/1'
-gnmic -a "$GNMIC_ADDRESS" -u "$GNMIC_USERNAME" -p "$GNMIC_PASSWORD" \
-  --skip-verify --encoding json_ietf subscribe \
+gnmi subscribe \
+  --encoding json_ietf \
   --path "rfc7951:/Cisco-IOS-XE-interfaces-oper:interfaces/interface[name=${IFACE}]/admin-status" \
   --mode stream \
   --stream-mode on_change
@@ -118,11 +121,11 @@ Sets from a second terminal:
 # Terminal 2: the original config/enabled state was true
 IFACE='TwoGigabitEthernet4/0/1'
 ENABLE_PATH="openconfig:/interfaces/interface[name=${IFACE}]/config/enabled"
-gnmic -a "$GNMIC_ADDRESS" -u "$GNMIC_USERNAME" -p "$GNMIC_PASSWORD" \
-  --skip-verify --encoding json_ietf set \
+gnmi set \
+  --encoding json_ietf \
   --update "${ENABLE_PATH}:::bool:::false" # shut
-gnmic -a "$GNMIC_ADDRESS" -u "$GNMIC_USERNAME" -p "$GNMIC_PASSWORD" \
-  --skip-verify --encoding json_ietf set \
+gnmi set \
+  --encoding json_ietf \
   --update "${ENABLE_PATH}:::bool:::true" # no shut
 ```
 
@@ -146,7 +149,7 @@ poll; repeat to poll again. Press `Ctrl+C` to exit.
 
 ```bash
 IFACE='TwoGigabitEthernet4/0/1'
-gnmic subscribe \
+gnmi subscribe \
   --path "rfc7951:/Cisco-IOS-XE-interfaces-oper:interfaces/interface[name=${IFACE}]/admin-status" \
   --mode poll
 ```
@@ -159,7 +162,7 @@ Keyed CPU flag poll (verified; initial and manual poll both returned `false`):
 
 ```bash
 IFACE='TwoGigabitEthernet4/0/1'
-gnmic subscribe \
+gnmi subscribe \
   --path "/interfaces/interface[name=${IFACE}]/state/cpu" \
   --mode poll
 ```

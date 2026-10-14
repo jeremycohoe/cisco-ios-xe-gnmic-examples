@@ -66,7 +66,9 @@ configure gNMIc with its CA:
 ```bash
 export GNMIC_TLS_CA="/path/to/lab-ca.pem"
 unset GNMIC_SKIP_VERIFY
-gnmic capabilities --address "$GNMIC_ADDRESS"
+gnmic capabilities --address "$GNMIC_ADDRESS" \
+  --username "$GNMIC_USERNAME" --password "$GNMIC_PASSWORD" \
+  --tls-ca "$GNMIC_TLS_CA"
 ```
 
 If connecting by IP but the certificate SAN contains a DNS name, use that DNS
@@ -83,7 +85,9 @@ For a temporary isolated lab diagnostic, gNMIc can skip certificate
 verification:
 
 ```bash
-gnmic capabilities --address "$GNMIC_ADDRESS" --skip-verify
+gnmic capabilities --address "$GNMIC_ADDRESS" \
+  --username "$GNMIC_USERNAME" --password "$GNMIC_PASSWORD" \
+  --skip-verify
 ```
 
 This still encrypts traffic, but it does not authenticate the server; an active

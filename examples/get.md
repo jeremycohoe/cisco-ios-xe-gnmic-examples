@@ -1,7 +1,10 @@
 # Get data
 
 `get` sends one request and returns a snapshot. These commands use the
-connection environment variables from the repository README.
+`gnmi()` Bash helper from the repository README. Run its [connection
+setup](../README.md#connect-to-the-switch) in the same terminal before copying
+these commands. Compare the requested path and value type; source addresses,
+timestamps, and actual device values can differ.
 
 The gNMI service configuration, CPU, memory, environment sensor, and NTP
 operational Gets are kept in the [primary README](../README.md#additional-cisco-operational-gets),
@@ -11,7 +14,7 @@ in the README and available as a separate sanitized JSON capture.
 ## Cisco native hostname
 
 ```bash
-gnmic get \
+gnmi get \
   --path 'rfc7951:/Cisco-IOS-XE-native:native/hostname' \
   --encoding json_ietf
 ```
@@ -43,7 +46,7 @@ Replace the interface member and port with the one you intend to inspect.
 
 ```bash
 IFACE='MEMBER/PORT'
-gnmic get \
+gnmi get \
   --path "rfc7951:/Cisco-IOS-XE-native:native/interface/GigabitEthernet[name=${IFACE}]/description" \
   --encoding json_ietf
 ```
@@ -76,7 +79,7 @@ that list entry:
 
 ```bash
 VLAN_ID='899'
-gnmic get \
+gnmi get \
   --path "rfc7951:/Cisco-IOS-XE-native:native/vlan/Cisco-IOS-XE-vlan:vlan-list[id=${VLAN_ID}]" \
   --encoding json_ietf
 ```
@@ -109,7 +112,7 @@ Verified full response:
 The operational model reports whether VLAN 899 is active:
 
 ```bash
-gnmic get \
+gnmi get \
   --path 'rfc7951:/Cisco-IOS-XE-vlan-oper:vlans/vlan[id=899]' \
   --encoding json_ietf
 ```
@@ -142,7 +145,7 @@ The operational VLAN response included `status: active`. Check its port list
 separately to verify membership:
 
 ```bash
-gnmic get \
+gnmi get \
   --path 'rfc7951:/Cisco-IOS-XE-vlan-oper:vlans/vlan[id=899]/ports' \
   --encoding json_ietf
 ```
@@ -171,7 +174,7 @@ Verified response (empty list; no ports assigned):
 
 ```bash
 VLAN_ID='REPLACE_WITH_TEST_VLAN'
-gnmic get \
+gnmi get \
   --path "rfc7951:/Cisco-IOS-XE-interfaces-oper:interfaces/interface[name=Vlan${VLAN_ID}]/oper-status" \
   --encoding json_ietf
 ```
@@ -200,7 +203,7 @@ gnmic get \
 
 ```bash
 VLAN_ID='REPLACE_WITH_TEST_VLAN'
-gnmic get \
+gnmi get \
   --path "openconfig:/interfaces/interface[name=Vlan${VLAN_ID}]/state/oper-status" \
   --encoding json_ietf
 ```
@@ -232,7 +235,7 @@ tree for interface state:
 
 ```bash
 VLAN_ID='REPLACE_WITH_TEST_VLAN'
-gnmic get \
+gnmi get \
   --path "rfc7951:/ietf-interfaces:interfaces-state/interface[name=Vlan${VLAN_ID}]/oper-status" \
   --encoding json_ietf
 ```
