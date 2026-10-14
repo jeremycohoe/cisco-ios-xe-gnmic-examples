@@ -1,0 +1,42 @@
+[
+  {
+    "source": "<DEVICE_ADDRESS>:9339",
+    "timestamp": 1792000744103157166,
+    "time": "2026-10-14T10:59:04.103157166-07:00",
+    "updates": [
+      {
+        "Path": "rfc7951:Cisco-IOS-XE-memory-oper:memory-statistics",
+        "values": {
+          "Cisco-IOS-XE-memory-oper:memory-statistics": {
+            "memory-statistic": [
+              {
+                "free-memory": "946637716",
+                "highest-usage": "944947744",
+                "lowest-usage": "943638332",
+                "name": "Processor",
+                "total-memory": "1326519612",
+                "used-memory": "379881896"
+              },
+              {
+                "free-memory": "102312",
+                "highest-usage": "102312",
+                "lowest-usage": "102312",
+                "name": "reserve Processor",
+                "total-memory": "102404",
+                "used-memory": "92"
+              },
+              {
+                "free-memory": "824",
+                "highest-usage": "412",
+                "lowest-usage": "824",
+                "name": "lsmpi_io",
+                "total-memory": "6295128",
+                "used-memory": "6294304"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

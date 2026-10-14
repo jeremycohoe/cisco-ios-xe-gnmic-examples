@@ -18,5 +18,18 @@ Each capture should include:
 Do not store private keys or credentials here. A public server certificate can
 still reveal device identity; get explicit approval before tracking one. The
 example pages include full sanitized response envelopes for verified Gets,
-hostname Set operations, the VLAN Set, and periodic Subscribe. Raw unredacted
+hostname and interface Set operations, the VLAN Set history and same-value
+Replace, and Subscribe
+responses for SAMPLE, ONCE, POLL, and ON_CHANGE. The captures in this directory
+also include the sanitized inventory of all 486 advertised
+models, the complete MDT capability Get, a bounded MDT config stream-leaf Get,
+initial objects from VLAN and interface on-change subscriptions, the complete
+connected-interface shut/no-shut ON_CHANGE stream with SetResponse objects,
+OpenConfig/IETF interface description SetResponse/Get sequences, final VLAN-name
+Get, IETF periodic and ONCE samples, the keyed CPU-flag POLL response, and
+post-reload memory, environment-sensor, and NTP Gets.
+Device and peer IP addresses are replaced with placeholders in operational
+captures; interface names are redacted in subscribe outputs except for the
+owner-selected `TwoGigabitEthernet4/0/1` shut/no-shut example. The MDT config
+response redacts its subscription ID and device address. Raw unredacted
 captures are not stored in the repository.

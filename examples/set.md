@@ -1,139 +1,70 @@
 # Set configuration
 
-These commands demonstrate gNMI `SetRequest` updates and replacements. The
-hostname Update and Replace were sent to the lab device and then rolled back;
-the full sanitized responses are recorded below. VLAN 899 was created as
-`GNMI-LAB` and remains unassigned. An initial VLAN request timed out, then IOS
-XE reported a database lock; after the lock cleared, a retry succeeded. The
-interface description remains a dry-run template.
+This page records live Set requests. The hostname and VLAN-name Update/Replace,
+OpenConfig interface description Update/Replace/Delete, IETF interface
+description Update/Replace/Delete, and OpenConfig `config/enabled` Update were
+sent to the lab C9300 and verified with Get. Full response envelopes are linked
+below. The interface description tests restored the original empty values.
 
-For dry runs, gNMIc prints the request it would send; that does not validate
-the target's YANG schema or prove that IOS XE accepts the path.
+The VLAN rename/restore commands timed out, but a later Get confirmed the
+authorized restore eventually completed and the name is `GNMI-LAB`. Do not
+retry a Set timeout blindly; Get the path and wait for any configuration lock
+to clear. The gNMI listener and port were not changed.
 
-Set examples in this file use the Cisco native model because it was advertised
-by the lab device. Set the target variables as described in the README, then
-use a test device and save the current value before sending a real request.
+The target advertises gNMI 0.7.0. Core Set operations are Update, Replace, and
+Delete. `UnionReplace` was added to the gNMI specification in 0.10.0 and is not
+available on this target. This page avoids request-rendering-only Set examples.
 
-## Change hostname with Update
+## Operation and model coverage
 
-`Update` writes the supplied leaf value. It is suitable for changing a
-hostname:
+| Model/path | Update | Replace | Delete | Live evidence or limitation |
+|---|---|---|---|---|
+| Cisco native hostname | Verified live | Verified live | Not appropriate: mandatory leaf | Temporary changes and rollback verified; see [hostname responses](../README.md#set-examples-and-full-responses) |
+| Cisco native VLAN name | Verified live and restored | Verified live | Not collected | VLAN 899 is `GNMI-LAB`, active and portless; timeout/restore and same-value Replace are recorded below |
+| Cisco native interface description | Not collected | Not collected | Not collected | No live request; not included in the verified set examples |
+| OpenConfig interface `config/enabled` | Verified live and restored | Not collected | Not collected | Lab port state change captured in the primary README |
+| OpenConfig interface `config/description` | Verified live and restored | Verified live and restored | Verified live and restored | Each Set followed by Get; original empty value restored |
+| IETF interface `description` | Verified live and restored | Verified live and restored | Verified live and restored | Each Set followed by Get; original empty value restored |
+| `*-oper`, `interfaces-state`, CPU, memory, environment, NTP state | N/A | N/A | N/A | Operational data is read-only |
+| gNMI cfg secure-port | Not changed | Not changed | Not changed | Explicitly excluded; listener port remains unchanged |
+| MDT cfg, NTP config, YANG interface config, other advertised config models | Not collected | Not collected | Not collected | Need an exact approved path/value before live Set collection |
 
-```bash
-NEW_HOSTNAME='gnmi-lab-switch'
-HOSTNAME_PATH='rfc7951:/Cisco-IOS-XE-native:native/hostname'
-gnmic set --dry-run \
-  --update "${HOSTNAME_PATH}:::string:::${NEW_HOSTNAME}"
-```
+## OpenConfig interface description
 
-Local dry-run output:
-
-```json
-{
-  "update": [
-    {
-      "path": "rfc7951:Cisco-IOS-XE-native:native/hostname",
-      "val": "string_val:\"gnmi-lab-switch\""
-    }
-  ]
-}
-```
-
-Before a live change, record the original hostname and a rollback command. A
-hostname change can affect CLI prompts, monitoring, and inventory systems.
-
-## Change hostname with Replace
-
-`Replace` replaces the value at the specified leaf. At a single leaf it looks
-similar to Update, but can have different effects when the path points to a
-container or list. Keep replacements narrowly scoped:
+The initial Get returned an empty description. The following live sequence set
+the temporary value, exercised Replace, then deleted the optional leaf to
+restore the empty state. Get was run after each Set.
 
 ```bash
-gnmic set --dry-run \
-  --replace "${HOSTNAME_PATH}:::string:::${NEW_HOSTNAME}"
+IFACE='TwoGigabitEthernet4/0/1'
+TEST_DESCRIPTION='GNMI-LAB-TEST'
+DESC_PATH="openconfig:/interfaces/interface[name=${IFACE}]/config/description"
+
+gnmic set --update "${DESC_PATH}:::string:::${TEST_DESCRIPTION}"
+gnmic set --replace "${DESC_PATH}:::string:::${TEST_DESCRIPTION}"
+gnmic set --delete "${DESC_PATH}"
 ```
 
-Local dry-run output:
+## IETF interface description
 
-```json
-{
-  "replace": [
-    {
-      "path": "rfc7951:Cisco-IOS-XE-native:native/hostname",
-      "val": "string_val:\"gnmi-lab-switch\""
-    }
-  ]
-}
-```
-
-## Update or replace an interface description
-
-Choose an interface that is safe for a lab change. First Get and save the
-current description. This is a command template; validate the exact path and
-interface name on the target:
+The IETF config tree had the same initial empty description. Update and Replace
+set the temporary value; Delete restored the empty value. Get followed each
+operation.
 
 ```bash
-IFACE='MEMBER/PORT'
-NEW_DESCRIPTION='gnmi-lab-test'
-DESC_PATH="rfc7951:/Cisco-IOS-XE-native:native/interface/GigabitEthernet[name=${IFACE}]/description"
+IFACE='TwoGigabitEthernet4/0/1'
+TEST_DESCRIPTION='GNMI-LAB-TEST'
+DESC_PATH="rfc7951:/ietf-interfaces:interfaces/interface[name=${IFACE}]/description"
 
-gnmic set --dry-run \
-  --update "${DESC_PATH}:::string:::${NEW_DESCRIPTION}"
-gnmic set --dry-run \
-  --replace "${DESC_PATH}:::string:::${NEW_DESCRIPTION}"
+gnmic set --update "${DESC_PATH}:::string:::${TEST_DESCRIPTION}"
+gnmic set --replace "${DESC_PATH}:::string:::${TEST_DESCRIPTION}"
+gnmic set --delete "${DESC_PATH}"
 ```
 
-Local dry-run output (interface identifier redacted):
-
-```json
-{
-  "update": [
-    {
-      "path": "rfc7951:Cisco-IOS-XE-native:native/interface/GigabitEthernet[name=<REDACTED_INTERFACE>]/description",
-      "val": "string_val:\"gnmi-lab-test\""
-    }
-  ]
-}
-```
-
-For an actual change, remove `--dry-run` only after reviewing the generated
-request, saving the old value, and confirming the interface and rollback.
-Restore the prior text with an Update to the same leaf. If the prior value was
-absent, use a narrowly scoped Delete only after verifying IOS XE's behavior.
-
-## Set a VLAN name
-
-The lab Get exposed the `Cisco-IOS-XE-vlan:vlan-list` augmentation under
-`native/vlan`. VLAN 899 was created with this leaf Update and verified by Get.
-The command below uses an example VLAN ID for adaptation. Confirm that the ID
-is unused and that the list key matches the target's model revision. Creating
-a VLAN or changing its name may affect production traffic:
-
-```bash
-VLAN_ID='3999'
-VLAN_NAME='GNMI-LAB'
-VLAN_NAME_PATH="rfc7951:/Cisco-IOS-XE-native:native/vlan/Cisco-IOS-XE-vlan:vlan-list[id=${VLAN_ID}]/name"
-gnmic set --dry-run \
-  --update "${VLAN_NAME_PATH}:::string:::${VLAN_NAME}"
-```
-
-Local dry-run output (request rendering only; not a schema or device
-acceptance check):
-
-```json
-{
-  "update": [
-    {
-      "path": "rfc7951:Cisco-IOS-XE-native:native/vlan/Cisco-IOS-XE-vlan:vlan-list[id=3999]/name",
-      "val": "string_val:\"GNMI-LAB\""
-    }
-  ]
-}
-```
-
-For a beginner, start with one leaf update on a disposable lab object. VLAN
-creation/deletion should be added only after the target's YANG path, current
-state, and rollback have been confirmed.
+The complete sanitized SetResponse and verification Get sequence is in
+[interface-descriptions-set.ndjson](../captures/interface-descriptions-set.ndjson).
+Both model paths ended with an empty description. The selected test port is
+retained because the owner approved it for this example.
 
 ## Verified live VLAN Update
 
@@ -204,8 +135,26 @@ Verification Get:
 ]
 ```
 
-VLAN 899 is left in configuration and has no ports assigned. Confirm local
-change-management requirements before using this pattern outside a lab.
+Immediately after the Set, Gets showed VLAN 899 active with no ports assigned.
+Post-reload Gets confirmed it persisted with the name `GNMI-LAB`. On
+2026-10-14 a temporary rename request timed out; later Get returned
+`GNMI-LAB-EVENT`. The restore request also timed out and its immediate Get
+still showed that temporary value. A later Get at 12:55 confirmed that the
+restore eventually applied and the name was again `GNMI-LAB`. If a Set times
+out, Get the path before retrying; a delayed application is possible.
+
+### VLAN Replace and Delete
+
+Replace was sent on the existing VLAN-name leaf with the current value
+`GNMI-LAB`. The SetResponse reported `REPLACE`, and an immediate Get returned
+`GNMI-LAB`. This exercised the operation without changing the VLAN. See the
+[sanitized response pair](../captures/vlan-name-replace.ndjson). Delete was
+not sent because it would remove VLAN 899.
+
+For this device, `UnionReplace` is not a usable demonstrated operation. The
+device advertises gNMI 0.7.0; the gNMI specification added `union_replace` in
+version 0.10.0. Do not count gNMIc's presence of a similarly named local flag
+as server support.
 
 ## Verified live hostname Update and Replace
 

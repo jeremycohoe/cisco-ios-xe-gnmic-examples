@@ -3,9 +3,10 @@
 `get` sends one request and returns a snapshot. These commands use the
 connection environment variables from the repository README.
 
-The new gNMI service configuration and CPU utilization Gets are kept in the
-[primary README](../README.md#cisco-gnmi-cfg-get), along with their exact
-responses and the current inventory of uncollected model candidates.
+The gNMI service configuration, CPU, memory, environment sensor, and NTP
+operational Gets are kept in the [primary README](../README.md#additional-cisco-operational-gets),
+along with their exact responses. The large environment response is collapsed
+in the README and available as a separate sanitized JSON capture.
 
 ## Cisco native hostname
 

@@ -1,0 +1,2 @@
+{"source":"<DEVICE_ADDRESS>:9339","subscription-name":"default-1792006431","timestamp":1792005943842405000,"time":"2026-10-14T12:25:43.842405-07:00","updates":[{"Path":"rfc7951:Cisco-IOS-XE-interfaces-oper:interfaces/interface[name=TwoGigabitEthernet4/0/1]/admin-status","values":{"Cisco-IOS-XE-interfaces-oper:interfaces/interface/admin-status":"if-state-up"}}]}
+{"source":"<DEVICE_ADDRESS>:9339","subscription-name":"default-1792006431","timestamp":1792005943843457000,"time":"2026-10-14T12:25:43.843457-07:00"}

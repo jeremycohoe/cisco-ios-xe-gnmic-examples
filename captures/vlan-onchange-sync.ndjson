@@ -1,0 +1,15 @@
+{
+  "source": "<DEVICE_ADDRESS>:9339",
+  "subscription-name": "default-1792000187",
+  "timestamp": 1791999699141582000,
+  "time": "2026-10-14T10:41:39.141582-07:00",
+  "updates": [
+    {
+      "Path": "rfc7951:Cisco-IOS-XE-vlan-oper:vlans/vlan[id=899]/name",
+      "values": {
+        "Cisco-IOS-XE-vlan-oper:vlans/vlan/name": "GNMI-LAB"
+      }
+    }
+  ]
+}
+{"sync-response": true}

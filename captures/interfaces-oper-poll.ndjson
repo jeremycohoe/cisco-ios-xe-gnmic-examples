@@ -1,0 +1,5 @@
+{"timestamp":1792006358049932000,"time":"2026-10-14T12:32:38.049932-07:00","updates":[{"Path":"interfaces/interface[name=TwoGigabitEthernet4/0/1]/state/cpu","values":{"interfaces/interface/state/cpu":false}}]}
+{"timestamp":1792006358051034000,"time":"2026-10-14T12:32:38.051034-07:00"}
+{"sync-response":true}
+{"timestamp":1792006368843668000,"time":"2026-10-14T12:32:48.843668-07:00","updates":[{"Path":"interfaces/interface[name=TwoGigabitEthernet4/0/1]/state/cpu","values":{"interfaces/interface/state/cpu":false}}]}
+{"timestamp":1792006368844767000,"time":"2026-10-14T12:32:48.844767-07:00"}

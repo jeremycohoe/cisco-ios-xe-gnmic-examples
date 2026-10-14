@@ -31,10 +31,17 @@ portable, safe to adapt, and honest about what was verified.
 ## Configuration changes
 
 - A documentation request does not by itself authorize a live Set operation.
-- Start with `--dry-run`, show the exact request, save the old value, and provide
-  a rollback command before any real write.
-- Do not change hostname, interfaces, VLANs, or other live configuration unless
-  the user explicitly authorizes the specific target and value for that write.
+- The user explicitly authorized real hostname changes and creation of one lab
+  VLAN in the range 800-899 for this workflow. Keep those writes narrow, record
+  the prior state, and provide a rollback. Do not require a dry run for these
+  explicitly authorized live changes.
+- That authorization does not extend to interface descriptions, AAA, telemetry,
+  gNMI service/TLS settings, or other configuration models. Use templates or
+  local dry-run rendering for those until the specific target and value are
+  authorized.
+- After a Set timeout, Get the target path before retrying; a timeout does not
+  show whether the device applied the request. If IOS XE reports a configuration
+  database lock, check state and wait for the lock to clear before retrying.
 - Avoid destructive `replace` or `delete` examples unless their scope and
   rollback are explicit.
 

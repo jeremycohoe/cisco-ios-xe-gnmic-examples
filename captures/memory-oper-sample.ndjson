@@ -1,0 +1,33 @@
+{
+  "source": "<DEVICE_ADDRESS>:9339",
+  "subscription-name": "default-1792001630",
+  "timestamp": 1792001142825057000,
+  "time": "2026-10-14T11:05:42.825057-07:00"
+}
+{
+  "source": "<DEVICE_ADDRESS>:9339",
+  "subscription-name": "default-1792001630",
+  "timestamp": 1792001142825954000,
+  "time": "2026-10-14T11:05:42.825954-07:00"
+}
+{
+  "sync-response": true
+}
+{
+  "source": "<DEVICE_ADDRESS>:9339",
+  "subscription-name": "default-1792001630",
+  "timestamp": 1792001147819623000,
+  "time": "2026-10-14T11:05:47.819623-07:00"
+}
+{
+  "source": "<DEVICE_ADDRESS>:9339",
+  "subscription-name": "default-1792001630",
+  "timestamp": 1792001152820008000,
+  "time": "2026-10-14T11:05:52.820008-07:00"
+}
+{
+  "source": "<DEVICE_ADDRESS>:9339",
+  "subscription-name": "default-1792001630",
+  "timestamp": 1792001157822814000,
+  "time": "2026-10-14T11:05:57.822814-07:00"
+}

@@ -1,0 +1,15 @@
+[
+  {
+    "source": "<DEVICE_ADDRESS>:9339",
+    "timestamp": 1791999530894600204,
+    "time": "2026-10-14T10:38:50.894600204-07:00",
+    "updates": [
+      {
+        "Path": "rfc7951:Cisco-IOS-XE-mdt-cfg:mdt-config-data/mdt-subscription[subscription-id=<REDACTED_ID>]/base/stream",
+        "values": {
+          "Cisco-IOS-XE-mdt-cfg:mdt-config-data/mdt-subscription/base/stream": "yang-push"
+        }
+      }
+    ]
+  }
+]
