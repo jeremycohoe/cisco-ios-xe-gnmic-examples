@@ -114,9 +114,9 @@ scripts/   capture-server-cert.sh · check-server-cert.sh · check-links.sh
 
 ## Workflow for changes (follow every time)
 
-1. Connect with the shared `gnmi()` helper (env vars; password typed by the
-   owner or reused only with explicit owner consent). Never route secrets you
-   are not given.
+1. Connect by exporting `GNMIC_*` env vars (`GNMIC_ADDRESS/USERNAME/PASSWORD`,
+   `GNMIC_SKIP_VERIFY=true`); password typed by the owner or reused only with
+   explicit consent. Never route secrets you are not given.
 2. Run the example live; capture the sanitized response into `captures/`
    (redact `<DEVICE_ADDRESS>`, `<REDACTED_HOSTNAME>`, peer IPs, subscription IDs,
    serials, MACs). Preserve the real response shape.

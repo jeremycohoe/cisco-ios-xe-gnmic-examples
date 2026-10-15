@@ -12,7 +12,7 @@ sanitized captures from the lab Catalyst 9300, IOS XE 26.02.1.
 
 ```bash
 VLAN_ID='899'
-gnmi get \
+gnmic get \
   --path "openconfig:/interfaces/interface[name=Vlan${VLAN_ID}]/state/oper-status" \
   --encoding json_ietf
 ```

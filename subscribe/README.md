@@ -57,7 +57,7 @@ back to periodic sampling.
 Read your device's on-change capability tree before relying on it:
 
 ```bash
-gnmi get \
+gnmic get \
   --path 'rfc7951:/Cisco-IOS-XE-mdt-capabilities-oper:mdt-capabilities-oper-data' \
   --encoding json_ietf
 ```

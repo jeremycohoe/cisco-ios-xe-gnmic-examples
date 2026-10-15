@@ -17,7 +17,7 @@ on this device, so use periodic sampling for that path. See
 
 ```bash
 VLAN_ID='899'
-gnmi subscribe \
+gnmic subscribe \
   --path "openconfig:/interfaces/interface[name=Vlan${VLAN_ID}]/state/oper-status" \
   --mode stream \
   --stream-mode sample \
@@ -50,7 +50,7 @@ the target and subscription and send a poll; `Ctrl+C` to exit.
 
 ```bash
 IFACE='GigabitEthernet0/0'
-gnmi subscribe \
+gnmic subscribe \
   --path "openconfig:/interfaces/interface[name=${IFACE}]/state/oper-status" \
   --mode poll
 ```

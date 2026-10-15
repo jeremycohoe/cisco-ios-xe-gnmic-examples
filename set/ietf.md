@@ -24,7 +24,7 @@ model.
 ```bash
 IFACE='TwoGigabitEthernet4/0/1'
 DESC_PATH="rfc7951:/ietf-interfaces:interfaces/interface[name=${IFACE}]/description"
-gnmi get --path "$DESC_PATH" --encoding json_ietf
+gnmic get --path "$DESC_PATH" --encoding json_ietf
 ```
 
 On the lab port the initial description was empty.
@@ -36,9 +36,9 @@ IFACE='TwoGigabitEthernet4/0/1'
 TEST_DESCRIPTION='GNMI-LAB-TEST'
 DESC_PATH="rfc7951:/ietf-interfaces:interfaces/interface[name=${IFACE}]/description"
 
-gnmi set --update "${DESC_PATH}:::string:::${TEST_DESCRIPTION}"
-gnmi set --replace "${DESC_PATH}:::string:::${TEST_DESCRIPTION}"
-gnmi set --delete "${DESC_PATH}"
+gnmic set --update "${DESC_PATH}:::string:::${TEST_DESCRIPTION}"
+gnmic set --replace "${DESC_PATH}:::string:::${TEST_DESCRIPTION}"
+gnmic set --delete "${DESC_PATH}"
 ```
 
 **Change these fields:**

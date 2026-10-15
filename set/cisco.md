@@ -16,14 +16,14 @@ address and original hostname are redacted; timestamps and structure are kept.
 
 ```bash
 HOSTNAME_PATH='rfc7951:/Cisco-IOS-XE-native:native/hostname'
-ORIGINAL_HOSTNAME="$(gnmi get --path "$HOSTNAME_PATH" --encoding json_ietf)"
+ORIGINAL_HOSTNAME="$(gnmic get --path "$HOSTNAME_PATH" --encoding json_ietf)"
 # Inspect $ORIGINAL_HOSTNAME and note the current hostname before changing it.
 ```
 
 **Command — Update to a new hostname:**
 
 ```bash
-gnmi set --update \
+gnmic set --update \
   'rfc7951:/Cisco-IOS-XE-native:native/hostname:::string:::GNMIC-LAB'
 ```
 
@@ -46,7 +46,7 @@ gnmi set --update \
 **Command — Replace to a different hostname:**
 
 ```bash
-gnmi set --replace \
+gnmic set --replace \
   'rfc7951:/Cisco-IOS-XE-native:native/hostname:::string:::GNMIC-REPLACE-DEMO'
 ```
 
@@ -72,7 +72,7 @@ gnmi set --replace \
 **Verify:**
 
 ```bash
-gnmi get --path 'rfc7951:/Cisco-IOS-XE-native:native/hostname' --encoding json_ietf
+gnmic get --path 'rfc7951:/Cisco-IOS-XE-native:native/hostname' --encoding json_ietf
 ```
 
 The verification Get after the Replace returned `GNMIC-REPLACE-DEMO`:
@@ -98,7 +98,7 @@ The verification Get after the Replace returned `GNMIC-REPLACE-DEMO`:
 **Rollback** — restore the value saved before the first Set:
 
 ```bash
-gnmi set --update \
+gnmic set --update \
   "${HOSTNAME_PATH}:::string:::${ORIGINAL_HOSTNAME}"
 ```
 
@@ -143,7 +143,7 @@ original hostname (shown redacted here):
 
 ```bash
 VLAN_ID='899'
-gnmi set --timeout 45s --update \
+gnmic set --timeout 45s --update \
   "rfc7951:/Cisco-IOS-XE-native:native/vlan/Cisco-IOS-XE-vlan:vlan-list[id=${VLAN_ID}]/name:::string:::GNMI-LAB"
 ```
 
@@ -171,7 +171,7 @@ gnmi set --timeout 45s --update \
 
 ```bash
 VLAN_ID='899'
-gnmi get \
+gnmic get \
   --path "rfc7951:/Cisco-IOS-XE-native:native/vlan/Cisco-IOS-XE-vlan:vlan-list[id=${VLAN_ID}]" \
   --encoding json_ietf
 ```
@@ -201,7 +201,7 @@ gnmi get \
 
 ```bash
 VLAN_ID='899'
-gnmi set --replace \
+gnmic set --replace \
   "rfc7951:/Cisco-IOS-XE-native:native/vlan/Cisco-IOS-XE-vlan:vlan-list[id=${VLAN_ID}]/name:::string:::GNMI-LAB"
 ```
 
@@ -238,9 +238,9 @@ VLAN 899 is untouched.
 
 ```bash
 VLAN_ID='898'
-gnmi set --timeout 90s --update \
+gnmic set --timeout 90s --update \
   "rfc7951:/Cisco-IOS-XE-native:native/vlan/Cisco-IOS-XE-vlan:vlan-list[id=${VLAN_ID}]/name:::string:::GNMI-DELETE-DEMO"
-gnmi get --path "rfc7951:/Cisco-IOS-XE-native:native/vlan/Cisco-IOS-XE-vlan:vlan-list[id=${VLAN_ID}]" --encoding json_ietf
+gnmic get --path "rfc7951:/Cisco-IOS-XE-native:native/vlan/Cisco-IOS-XE-vlan:vlan-list[id=${VLAN_ID}]" --encoding json_ietf
 ```
 
 The Get confirmed the entry:
@@ -253,7 +253,7 @@ The Get confirmed the entry:
 
 ```bash
 VLAN_ID='898'
-gnmi set --timeout 90s --delete \
+gnmic set --timeout 90s --delete \
   "rfc7951:/Cisco-IOS-XE-native:native/vlan/Cisco-IOS-XE-vlan:vlan-list[id=${VLAN_ID}]"
 ```
 
@@ -294,7 +294,7 @@ substitute your own approved lab port. Note the interface type in the path
 ```bash
 IFACE='4/0/1'
 DESC_PATH="rfc7951:/Cisco-IOS-XE-native:native/interface/TwoGigabitEthernet[name=${IFACE}]/description"
-gnmi get --path "$DESC_PATH" --encoding json_ietf
+gnmic get --path "$DESC_PATH" --encoding json_ietf
 ```
 
 On the lab port the initial description was empty.
@@ -306,9 +306,9 @@ IFACE='4/0/1'
 TEST_DESCRIPTION='GNMI-LAB-TEST'
 DESC_PATH="rfc7951:/Cisco-IOS-XE-native:native/interface/TwoGigabitEthernet[name=${IFACE}]/description"
 
-gnmi set --update "${DESC_PATH}:::string:::${TEST_DESCRIPTION}"
-gnmi set --replace "${DESC_PATH}:::string:::${TEST_DESCRIPTION}"
-gnmi set --delete "${DESC_PATH}"
+gnmic set --update "${DESC_PATH}:::string:::${TEST_DESCRIPTION}"
+gnmic set --replace "${DESC_PATH}:::string:::${TEST_DESCRIPTION}"
+gnmic set --delete "${DESC_PATH}"
 ```
 
 **Observed:** each operation returned a clean SetResponse (`UPDATE`, `REPLACE`,

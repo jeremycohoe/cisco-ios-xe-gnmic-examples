@@ -13,13 +13,13 @@ machine-readable JSON, not duplicated here:
 Read the live inventory from your own device with:
 
 ```bash
-gnmi capabilities
+gnmic capabilities
 ```
 
 Filter it down to the models used in this guide:
 
 ```bash
-gnmi capabilities --format json |
+gnmic capabilities --format json |
   rg -A 1 '"name": "Cisco-IOS-XE-(gnmi-cfg|process-cpu-oper|mdt-cfg|mdt-capabilities-oper|memory-oper|environment-oper|ntp-oper)"'
 ```
 
@@ -56,7 +56,7 @@ Notes:
 - Set payloads use typed values (e.g. `:::string:::NAME`); `json`/`proto` were
   not separately exercised for Set.
 
-Confirm which encodings your device advertises with `gnmi capabilities`.
+Confirm which encodings your device advertises with `gnmic capabilities`.
 
 ## Models used in this guide
 

@@ -17,7 +17,7 @@ Subscribe, not Set. For writable IETF interface config (description), see
 
 ```bash
 VLAN_ID='899'
-gnmi get \
+gnmic get \
   --path "rfc7951:/ietf-interfaces:interfaces-state/interface[name=Vlan${VLAN_ID}]/oper-status" \
   --encoding json_ietf
 ```

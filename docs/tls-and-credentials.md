@@ -46,7 +46,7 @@ Check that `Secure server: Enabled`, the secure port (default `9339`),
 connect with gNMIc using `--skip-verify` (self-signed) and username/password:
 
 ```bash
-gnmi capabilities
+gnmic capabilities
 ```
 
 ### Replacing the insecure gNMI server

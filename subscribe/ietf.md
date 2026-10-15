@@ -16,7 +16,7 @@ Get, not Set. It has no on-change override, so use periodic sampling.
 
 ```bash
 IFACE='TwoGigabitEthernet4/0/1'
-gnmi subscribe \
+gnmic subscribe \
   --path "rfc7951:/ietf-interfaces:interfaces-state/interface[name=${IFACE}]/oper-status" \
   --mode stream \
   --stream-mode sample \
@@ -55,7 +55,7 @@ Enter to select the target and subscription and send a poll; `Ctrl+C` to exit.
 
 ```bash
 IFACE='GigabitEthernet0/0'
-gnmi subscribe \
+gnmic subscribe \
   --path "rfc7951:/ietf-interfaces:interfaces-state/interface[name=${IFACE}]/oper-status" \
   --mode poll
 ```

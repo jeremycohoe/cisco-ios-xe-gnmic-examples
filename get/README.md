@@ -5,7 +5,8 @@ model, copy the command, change only the highlighted fields, and compare your
 response to the observed one.
 
 Run the [connection setup](../README.md#connect-and-authenticate) in the same
-terminal first so the `gnmi()` helper, address, and credentials are defined.
+terminal first so the `GNMIC_*` environment variables (address, username,
+password) are set.
 
 When comparing responses, ignore the source address, timestamps, and
 site-specific values. Check the requested path, the value type, and the state.

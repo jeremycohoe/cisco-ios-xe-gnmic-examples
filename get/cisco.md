@@ -13,7 +13,7 @@ site-specific values.
 **Goal:** Read the device hostname.
 
 ```bash
-gnmi get \
+gnmic get \
   --path 'rfc7951:/Cisco-IOS-XE-native:native/hostname' \
   --encoding json_ietf
 ```
@@ -53,7 +53,7 @@ gnmi get \
 
 ```bash
 IFACE='1/0/1'
-gnmi get \
+gnmic get \
   --path "rfc7951:/Cisco-IOS-XE-native:native/interface/GigabitEthernet[name=${IFACE}]/description" \
   --encoding json_ietf
 ```
@@ -97,7 +97,7 @@ value is empty):
 
 ```bash
 VLAN_ID='899'
-gnmi get \
+gnmic get \
   --path "rfc7951:/Cisco-IOS-XE-native:native/vlan/Cisco-IOS-XE-vlan:vlan-list[id=${VLAN_ID}]" \
   --encoding json_ietf
 ```
@@ -141,7 +141,7 @@ VLAN name.
 
 ```bash
 VLAN_ID='899'
-gnmi get \
+gnmic get \
   --path "rfc7951:/Cisco-IOS-XE-vlan-oper:vlans/vlan[id=${VLAN_ID}]" \
   --encoding json_ietf
 ```
@@ -174,7 +174,7 @@ Read the port list separately:
 
 ```bash
 VLAN_ID='899'
-gnmi get \
+gnmic get \
   --path "rfc7951:/Cisco-IOS-XE-vlan-oper:vlans/vlan[id=${VLAN_ID}]/ports" \
   --encoding json_ietf
 ```
@@ -214,7 +214,7 @@ gnmi get \
 
 ```bash
 VLAN_ID='899'
-gnmi get \
+gnmic get \
   --path "rfc7951:/Cisco-IOS-XE-interfaces-oper:interfaces/interface[name=Vlan${VLAN_ID}]/oper-status" \
   --encoding json_ietf
 ```
@@ -255,7 +255,7 @@ gnmi get \
 
 ```bash
 IFACE='TwoGigabitEthernet4/0/1'
-gnmi get \
+gnmic get \
   --path "rfc7951:/Cisco-IOS-XE-interfaces-oper:interfaces/interface[name=${IFACE}]/statistics" \
   --encoding json_ietf
 ```
@@ -308,7 +308,7 @@ device). Full capture:
 **Goal:** Confirm the secure gNMI listener port without changing the service.
 
 ```bash
-gnmi get \
+gnmic get \
   --path 'rfc7951:/Cisco-IOS-XE-gnmi-cfg:gnmi-cfg-data/config/secure-port' \
   --encoding json_ietf
 ```
@@ -348,7 +348,7 @@ the same session without a planned recovery path; a change can lock you out.
 table.
 
 ```bash
-gnmi get \
+gnmic get \
   --path 'rfc7951:/Cisco-IOS-XE-process-cpu-oper:cpu-usage/cpu-utilization/five-seconds' \
   --encoding json_ietf
 ```
@@ -387,7 +387,7 @@ gnmi get \
 **Goal:** Read memory pool statistics.
 
 ```bash
-gnmi get \
+gnmic get \
   --path 'rfc7951:/Cisco-IOS-XE-memory-oper:memory-statistics' \
   --encoding json_ietf
 ```
@@ -460,7 +460,7 @@ your release supports it.
 **Goal:** Read chassis environment sensors (temperature, power supply state).
 
 ```bash
-gnmi get \
+gnmic get \
   --path 'rfc7951:/Cisco-IOS-XE-environment-oper:environment-sensors' \
   --encoding json_ietf
 ```
@@ -532,7 +532,7 @@ path if you only need one sensor.
 **Goal:** Read NTP synchronization status and peer summary.
 
 ```bash
-gnmi get \
+gnmic get \
   --path 'rfc7951:/Cisco-IOS-XE-ntp-oper:ntp-oper-data/ntp-status-info' \
   --encoding json_ietf
 ```
@@ -557,7 +557,7 @@ full telemetry configuration.
 
 ```bash
 SUBSCRIPTION_ID='REPLACE_WITH_SUBSCRIPTION_ID'
-gnmi get \
+gnmic get \
   --path "rfc7951:/Cisco-IOS-XE-mdt-cfg:mdt-config-data/mdt-subscription[subscription-id=${SUBSCRIPTION_ID}]/base/stream" \
   --encoding json_ietf
 ```
@@ -604,7 +604,7 @@ sharing.
 
 ```bash
 IFACE='TenGigabitEthernet1/0/1'
-gnmi get \
+gnmic get \
   --path 'rfc7951:/Cisco-IOS-XE-native:native/hostname' \
   --path 'rfc7951:/Cisco-IOS-XE-process-cpu-oper:cpu-usage/cpu-utilization/five-seconds' \
   --path "rfc7951:/Cisco-IOS-XE-interfaces-oper:interfaces/interface[name=${IFACE}]/oper-status" \
@@ -643,9 +643,9 @@ hostname redacted). Full capture:
 
 ```bash
 P='rfc7951:/Cisco-IOS-XE-process-cpu-oper:cpu-usage/cpu-utilization/five-seconds'
-gnmi get --path "$P" --encoding json_ietf
-gnmi get --path "$P" --encoding json
-gnmi get --path "$P" --encoding proto
+gnmic get --path "$P" --encoding json_ietf
+gnmic get --path "$P" --encoding json
+gnmic get --path "$P" --encoding proto
 ```
 
 **Observed:** all three succeeded and returned the same value (`49` at capture
@@ -690,7 +690,7 @@ device returns a `prefix` plus a relative leaf path. Full capture:
 
 **Note:** keep the full `rfc7951:/...` (or `openconfig:/...`) path prefix with
 `proto`; dropping it returns `InvalidArgument ... unexpected prefix`. Confirm
-advertised encodings with `gnmi capabilities` (see
+advertised encodings with `gnmic capabilities` (see
 [docs/model-inventory.md](../docs/model-inventory.md#encodings)).
 
 **Status:** Verified on C9300-24UX / IOS XE 26.1 / 2026-10-14 (Get and Subscribe

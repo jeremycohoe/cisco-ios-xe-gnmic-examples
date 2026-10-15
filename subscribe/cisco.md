@@ -19,7 +19,7 @@ before relying on it. Stop streaming commands with `Ctrl+C`.
 
 ```bash
 IFACE='TwoGigabitEthernet4/0/1'
-gnmi subscribe \
+gnmic subscribe \
   --encoding json_ietf \
   --path "rfc7951:/Cisco-IOS-XE-interfaces-oper:interfaces/interface[name=${IFACE}]/admin-status" \
   --mode stream \
@@ -60,7 +60,7 @@ state changes. A final Get confirmed `config/enabled: true` and
 
 ```bash
 VLAN_ID='899'
-gnmi subscribe \
+gnmic subscribe \
   --path "rfc7951:/Cisco-IOS-XE-vlan-oper:vlans/vlan[id=${VLAN_ID}]/name" \
   --mode stream \
   --stream-mode on_change
@@ -108,7 +108,7 @@ on this device and may report a client timeout before it applies — see
 
 ```bash
 IFACE='TwoGigabitEthernet4/0/1'
-gnmi subscribe \
+gnmic subscribe \
   --path "rfc7951:/Cisco-IOS-XE-interfaces-oper:interfaces/interface[name=${IFACE}]/admin-status" \
   --mode once
 ```
@@ -144,7 +144,7 @@ select the target and subscription and send a poll; repeat to poll again;
 
 ```bash
 IFACE='GigabitEthernet0/0'
-gnmi subscribe \
+gnmic subscribe \
   --path "rfc7951:/Cisco-IOS-XE-interfaces-oper:interfaces/interface[name=${IFACE}]/oper-status" \
   --mode poll
 ```
@@ -181,7 +181,7 @@ to exit. Use a keyed path to keep the output narrow.
 
 ```bash
 IFACE='TwoGigabitEthernet4/0/1'
-gnmi subscribe \
+gnmic subscribe \
   --path "/interfaces/interface[name=${IFACE}]/state/cpu" \
   --mode poll
 ```
@@ -211,7 +211,7 @@ poll). Full capture:
 **Goal:** Stream memory pool statistics at a fixed interval.
 
 ```bash
-gnmi subscribe \
+gnmic subscribe \
   --path 'rfc7951:/Cisco-IOS-XE-memory-oper:memory-statistics' \
   --mode stream \
   --stream-mode sample \
@@ -250,7 +250,7 @@ capture:
 
 ```bash
 IFACE='TenGigabitEthernet1/0/1'
-gnmi subscribe \
+gnmic subscribe \
   --path "rfc7951:/Cisco-IOS-XE-interfaces-oper:interfaces/interface[name=${IFACE}]/oper-status" \
   --path 'rfc7951:/Cisco-IOS-XE-process-cpu-oper:cpu-usage/cpu-utilization/five-seconds' \
   --mode stream --stream-mode sample --sample-interval 5s --encoding json_ietf

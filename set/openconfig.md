@@ -23,7 +23,7 @@ Full sanitized SetResponse and verification-Get sequences:
 ```bash
 IFACE='TwoGigabitEthernet4/0/1'
 ENABLE_PATH="openconfig:/interfaces/interface[name=${IFACE}]/config/enabled"
-gnmi get --path "$ENABLE_PATH" --encoding json_ietf
+gnmic get --path "$ENABLE_PATH" --encoding json_ietf
 ```
 
 **Command — shut, then no-shut:**
@@ -32,8 +32,8 @@ gnmi get --path "$ENABLE_PATH" --encoding json_ietf
 IFACE='TwoGigabitEthernet4/0/1'
 ENABLE_PATH="openconfig:/interfaces/interface[name=${IFACE}]/config/enabled"
 
-gnmi set --encoding json_ietf --update "${ENABLE_PATH}:::bool:::false"   # shut
-gnmi set --encoding json_ietf --update "${ENABLE_PATH}:::bool:::true"    # no shut
+gnmic set --encoding json_ietf --update "${ENABLE_PATH}:::bool:::false"   # shut
+gnmic set --encoding json_ietf --update "${ENABLE_PATH}:::bool:::true"    # no shut
 ```
 
 **Change these fields:**
@@ -42,7 +42,7 @@ gnmi set --encoding json_ietf --update "${ENABLE_PATH}:::bool:::true"    # no sh
 **Verify:**
 
 ```bash
-gnmi get --path "$ENABLE_PATH" --encoding json_ietf
+gnmic get --path "$ENABLE_PATH" --encoding json_ietf
 ```
 
 The final Get returned `config/enabled: true`, with OpenConfig admin/oper `UP`
@@ -65,7 +65,7 @@ state.
 ```bash
 IFACE='TwoGigabitEthernet4/0/1'
 DESC_PATH="openconfig:/interfaces/interface[name=${IFACE}]/config/description"
-gnmi get --path "$DESC_PATH" --encoding json_ietf
+gnmic get --path "$DESC_PATH" --encoding json_ietf
 ```
 
 On the lab port the initial description was empty.
@@ -77,9 +77,9 @@ IFACE='TwoGigabitEthernet4/0/1'
 TEST_DESCRIPTION='GNMI-LAB-TEST'
 DESC_PATH="openconfig:/interfaces/interface[name=${IFACE}]/config/description"
 
-gnmi set --update "${DESC_PATH}:::string:::${TEST_DESCRIPTION}"
-gnmi set --replace "${DESC_PATH}:::string:::${TEST_DESCRIPTION}"
-gnmi set --delete "${DESC_PATH}"
+gnmic set --update "${DESC_PATH}:::string:::${TEST_DESCRIPTION}"
+gnmic set --replace "${DESC_PATH}:::string:::${TEST_DESCRIPTION}"
+gnmic set --delete "${DESC_PATH}"
 ```
 
 **Change these fields:**
