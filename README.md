@@ -65,12 +65,14 @@ Verify → Rollback** (writes only).
 |---|---|---|
 | Multi-path Get | Several leaves from different models in one Get | ✅ [get/cisco.md](get/cisco.md#multi-path-get) |
 | Multi-path Subscribe | Several leaves streamed in one subscription | ✅ [subscribe/cisco.md](subscribe/cisco.md#multi-path-subscribe) |
-| Encodings (`json_ietf` / `json` / `proto`) | Request a different wire encoding on Get or Subscribe | ✅ [recipe](get/cisco.md#encodings-proto-and-json) · [support matrix](docs/model-inventory.md#verified-operation--encoding-support) |
+| Encodings (`json_ietf` / `json` / `proto`) | Request a different wire encoding on Get or Subscribe | ✅ [recipe](get/cisco.md#encodings-proto-and-json) · [full command grid](docs/encodings.md) · [support matrix](docs/model-inventory.md#verified-operation--encoding-support) |
 
 ### Encoding support (operation × encoding)
 
 Verified live on C9300-24UX / IOS XE 26.1. Pass `--encoding` to choose; recipes
-default to `json_ietf`. Details: [get/cisco.md — Encodings](get/cisco.md#encodings-proto-and-json).
+default to `json_ietf`. **Every xpath in all three encodings:**
+[docs/encodings.md](docs/encodings.md). Recipe:
+[get/cisco.md — Encodings](get/cisco.md#encodings-proto-and-json).
 
 | Operation | `json_ietf` | `json` | `proto` |
 |---|---|---|---|
@@ -191,6 +193,8 @@ gnmi subscribe --path 'rfc7951:/Cisco-IOS-XE-process-cpu-oper:cpu-usage/cpu-util
 
 - [docs/model-inventory.md](docs/model-inventory.md) — advertised models and
   which ones this guide uses.
+- [docs/encodings.md](docs/encodings.md) — every command in `json_ietf` /
+  `json` / `proto`, per xpath.
 - [docs/limitations.md](docs/limitations.md) — what did not work, timeouts, and
   gotchas.
 - [docs/coverage.md](docs/coverage.md) — the full verification matrix.
