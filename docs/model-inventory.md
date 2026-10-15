@@ -27,6 +27,23 @@ Model revisions change between IOS XE releases. Always confirm the model and
 encoding you need against your device's live Capabilities before relying on a
 path below.
 
+## Encodings
+
+The lab devices advertised three encodings in Capabilities: **`JSON`**,
+**`JSON_IETF`**, and **`PROTO`**.
+
+- Every example in this guide uses **`--encoding json_ietf`** (RFC 7951). It is
+  the most portable and human-readable choice for IOS XE and the one Cisco's
+  gNMI guide documents for Get/Set.
+- **`JSON`** is also accepted; the main difference is namespace qualification of
+  keys (RFC 7951 prefixes).
+- **`PROTO`** uses gNMI `TypedValue` scalars instead of a JSON blob. It is
+  supported for Subscribe and is more compact on the wire; `gnmic` can request
+  it with `--encoding proto`. PROTO and JSON examples are planned as a follow-up
+  and are not yet captured here.
+
+Confirm which encodings your device advertises with `gnmi capabilities`.
+
 ## Models used in this guide
 
 | Model | Used for | Example |

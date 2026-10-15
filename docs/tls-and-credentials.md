@@ -14,6 +14,110 @@ compare the certificate across connections, but they do not make gNMIc verify
 the server or provide an SSH-style trust prompt. Never publish a private key;
 the lab certificate itself is not included here.
 
+## Enable gNMI on IOS XE
+
+gNMI on IOS XE runs over the secure gNXI/gNMI server. The example below enables
+it with username/password authentication and the device's own self-signed
+trustpoint — the same mode used for most examples in this guide. The commands
+are entered in global configuration mode.
+
+```text
+conf t
+ service internal                              ! required for secure-allow-self-signed-trustpoint
+ gnxi
+ gnxi secure-allow-self-signed-trustpoint
+ gnxi secure-password-auth
+ ! "gnxi secure-init" generates the self-signed trustpoint referenced below;
+ ! the trustpoint name is device-specific (TP-self-signed-<serial-derived-id>)
+ gnxi secure-trustpoint TP-self-signed-3775488971
+ gnxi secure-server
+end
+```
+
+Confirm the running state (note the actual command is `show gnmi-yang state` on
+some releases and `show gnxi state` on others):
+
+```text
+show gnmi-yang state detail
+```
+
+Check that `Secure server: Enabled`, the secure port (default `9339`),
+`Secure password authentication: Enabled`, and the `Secure trustpoint`. Then
+connect with gNMIc using `--skip-verify` (self-signed) and username/password:
+
+```bash
+gnmi capabilities
+```
+
+### Replacing the insecure gNMI server
+
+The **insecure** gNMI server (`gnxi server`, listening on the cleartext gRPC
+port such as `50052`) is **no longer supported**. If it is enabled, disable it
+and use the secure server instead:
+
+```text
+conf t
+ no gnxi server            ! remove the insecure listener
+ gnxi secure-server        ! use the secure server (see enablement above)
+end
+```
+
+Enabling `gnxi secure-server` replaces the insecure listener; the device then
+answers gNMI only on the secure port (TLS, default `9339`). Use `gnxi secure-init`
+to generate the self-signed trustpoint, or load your own trustpoint as shown
+below.
+
+### Bring your own trustpoint (mutual TLS)
+
+To validate the server properly — or to require client certificates
+(`gnxi secure-client-auth`) — load a trustpoint you control instead of the
+self-signed one. The certificates and keys are created off the device; a minimal
+OpenSSL example:
+
+```bash
+# Setting up a CA
+openssl genrsa -out rootCA.key 2048
+openssl req -subj "/C=US/.../CN=rootCA" -x509 -new -nodes -key rootCA.key \
+  -sha256 -out rootCA.pem
+
+# Device certificate and key (CN/SAN must match the gNMI target name)
+openssl genrsa -out device.key 2048
+openssl req -subj "/C=US/.../CN=<hostnameFQDN>" -new -key device.key -out device.csr
+openssl x509 -req -in device.csr -CA rootCA.pem -CAkey rootCA.key \
+  -CAcreateserial -out device.crt -sha256
+
+# Client certificate and key (only needed for secure-client-auth / mutual TLS)
+openssl genrsa -out client.key 2048
+openssl req -subj "/C=US/.../CN=gnmi_client" -new -key client.key -out client.csr
+openssl x509 -req -in client.csr -CA rootCA.pem -CAkey rootCA.key \
+  -CAcreateserial -out client.crt -sha256
+```
+
+Import the CA into a trustpoint on the device, then bind it to the secure
+server:
+
+```text
+conf t
+ crypto pki import trustpoint1 pem terminal password <password>
+ ! paste the CA (rootCA.pem) PEM, end with a blank line or "quit"
+ gnxi-yang secure-trustpoint trustpoint1
+ gnxi-yang secure-server
+end
+```
+
+Connect with gNMIc, validating the server against your CA and (for mutual TLS)
+presenting the client certificate and key:
+
+```bash
+gnmic --address "$GNMIC_ADDRESS" --username "$GNMIC_USERNAME" --password "$GNMIC_PASSWORD" \
+  --tls-ca rootCA.pem --tls-cert client.crt --tls-key client.key \
+  get --path '/Cisco-IOS-XE-native:native/hostname'
+```
+
+See the [Cisco IOS XE Programmability gNMI guide](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/prog/configuration/26x/26x-programmability-cg/gnmi.html)
+for the authoritative configuration reference. Keep all private keys out of the
+repository (`*.key`, `*.pem`, `*.crt`, `*.p12` are already in `.gitignore`).
+
 ## Credentials
 
 Do not publish the real password, even with part of it redacted. A shortened
@@ -96,11 +200,22 @@ for production credentials. Prefer fixing the server certificate.
 
 ## Client certificates
 
-The observed device configuration enables secure password authentication. It
-does not show `gnxi secure-client-auth`, so a client certificate is not required
-for the current setup. If mutual TLS is configured later, keep the client
-certificate and private key private and supply them with gNMIc's `--tls-cert`
-and `--tls-key` options. Never commit those files.
+Two authentication modes were observed across lab devices:
+
+- **Secure password authentication** (`gnxi secure-password-auth`): the client
+  presents username/password over TLS and no client certificate is required.
+  This is the mode used for most examples here.
+- **Secure client authentication** (`gnxi secure-client-auth`, mutual TLS): the
+  server requires a client certificate. If this is enabled **without** a valid
+  secure client trustpoint, the TLS handshake completes but the gRPC stream is
+  reset immediately (`error reading server preface: EOF`). Either configure a
+  client trustpoint and connect with `--tls-cert`/`--tls-key` (see
+  [Bring your own trustpoint](#bring-your-own-trustpoint-mutual-tls)), or switch
+  the device to `secure-password-auth`.
+
+Keep any client certificate and private key private; never commit those files.
+See [limitations and gotchas](limitations.md) and the connection notes in the
+primary README if a secure connection fails.
 
 ## References
 
