@@ -595,3 +595,74 @@ sharing.
 **Verify:** the `stream` leaf returns the subscription's stream type.
 
 **Status:** Verified on C9300 / IOS XE 26.02.1 / 2026-10-14.
+
+---
+
+## Multi-path Get
+
+**Goal:** Retrieve several leaves from different models in a single Get request.
+
+```bash
+IFACE='TenGigabitEthernet1/0/1'
+gnmi get \
+  --path 'rfc7951:/Cisco-IOS-XE-native:native/hostname' \
+  --path 'rfc7951:/Cisco-IOS-XE-process-cpu-oper:cpu-usage/cpu-utilization/five-seconds' \
+  --path "rfc7951:/Cisco-IOS-XE-interfaces-oper:interfaces/interface[name=${IFACE}]/oper-status" \
+  --encoding json_ietf
+```
+
+**Observed response** (one `GetResponse` with a separate notification per path;
+hostname redacted). Full capture:
+[captures/multi-path-get.json](../captures/multi-path-get.json).
+
+```json
+[
+  { "updates": [ { "Path": "rfc7951:Cisco-IOS-XE-native:native/hostname",
+      "values": { "Cisco-IOS-XE-native:native/hostname": "<REDACTED_HOSTNAME>" } } ] },
+  { "updates": [ { "Path": "rfc7951:Cisco-IOS-XE-process-cpu-oper:cpu-usage/cpu-utilization/five-seconds",
+      "values": { "Cisco-IOS-XE-process-cpu-oper:cpu-usage/cpu-utilization/five-seconds": 1 } } ] },
+  { "updates": [ { "Path": "rfc7951:Cisco-IOS-XE-interfaces-oper:interfaces/interface[name=TenGigabitEthernet1/0/1]/oper-status",
+      "values": { "Cisco-IOS-XE-interfaces-oper:interfaces/interface/oper-status": "if-oper-state-ready" } } ] }
+]
+```
+
+**Change these fields:**
+- Add or remove `--path` arguments; each becomes its own notification in the
+  response. `IFACE` is the interface key.
+
+**Verify:** the response contains one entry per requested path.
+
+**Status:** Verified on C9300-24UX / IOS XE 26.1 / 2026-10-14.
+
+---
+
+## Encodings (PROTO and JSON)
+
+**Goal:** Request a different wire encoding. Every other recipe uses
+`json_ietf`; the device also accepts `proto` and `json`.
+
+```bash
+gnmi get \
+  --path 'rfc7951:/Cisco-IOS-XE-process-cpu-oper:cpu-usage/cpu-utilization/five-seconds' \
+  --encoding proto
+```
+
+**Observed:** with `--encoding proto` the value arrives as a gNMI `TypedValue`
+scalar (gNMIc decodes it for display):
+
+```json
+{
+  "Path": "rfc7951:Cisco-IOS-XE-process-cpu-oper:cpu-usage/cpu-utilization/five-seconds",
+  "values": { "Cisco-IOS-XE-process-cpu-oper:cpu-usage/cpu-utilization/five-seconds": 2 }
+}
+```
+
+**Change these fields:**
+- `--encoding` — `json_ietf` (default here), `json`, or `proto`.
+
+**Note:** keep the full `rfc7951:/...` (or `openconfig:/...`) path prefix with
+`proto`; dropping it returns `InvalidArgument ... unexpected prefix`. Confirm
+advertised encodings with `gnmi capabilities` (see
+[docs/model-inventory.md](../docs/model-inventory.md#encodings)).
+
+**Status:** Verified on C9300-24UX / IOS XE 26.1 / 2026-10-14.

@@ -24,6 +24,7 @@ first. Stop streaming commands with `Ctrl+C`.
 | [Snapshot interface admin status](cisco.md#cisco-interface-once-snapshot) | ONCE |
 | [Poll an interface CPU flag](cisco.md#cisco-interface-cpu-flag-poll) | POLL |
 | [Sample memory statistics](cisco.md#cisco-memory-statistics-sample) | sample |
+| [Stream several paths at once](cisco.md#multi-path-subscribe) | sample |
 
 ### OpenConfig — [openconfig.md](openconfig.md)
 

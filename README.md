@@ -75,7 +75,7 @@ XPaths use the `rfc7951:` / `openconfig:` origin shown in each recipe.
 
 ## Device profile
 
-These examples were collected from one device. Treat the responses as reference
+Most examples were collected from one device. Treat the responses as reference
 output, not a promise for every release or state.
 
 - **Platform:** Catalyst 9300 stack
@@ -83,6 +83,9 @@ output, not a promise for every release or state.
 - **gNMI:** version `0.7.0`; encodings `JSON`, `JSON_IETF`, `PROTO`
 - **Transport:** secure gNMI on port `9339`, username/password auth, self-signed
   `gnxi secure-init` certificate
+- **Also verified on:** Catalyst 9300-24UX, IOS XE 26.1 — the memory
+  subscription, multi-path Get/Subscribe, and PROTO-encoding examples (labeled
+  in their recipes). Streaming behavior can differ by release.
 
 ## Connect and authenticate
 
@@ -165,3 +168,7 @@ your output, ignore the source address, timestamps, subscription name, and any
   discovering which paths and models are available before building a request.
 - [gNMIc documentation](https://gnmic.openconfig.net/)
 - [Cisco IOS XE 26.x gNMI Protocol guide](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/prog/configuration/26x/26x-programmability-cg/gnmi.html)
+
+## License
+
+Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE).

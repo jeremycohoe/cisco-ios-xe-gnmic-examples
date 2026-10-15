@@ -1,0 +1,38 @@
+[
+  {
+    "source": "<DEVICE_ADDRESS>:9339",
+    "time": "2026-10-14T19:59:36.356434695-07:00",
+    "updates": [
+      {
+        "Path": "rfc7951:Cisco-IOS-XE-native:native/hostname",
+        "values": {
+          "Cisco-IOS-XE-native:native/hostname": "<REDACTED_HOSTNAME>"
+        }
+      }
+    ]
+  },
+  {
+    "source": "<DEVICE_ADDRESS>:9339",
+    "time": "2026-10-14T19:59:36.359090824-07:00",
+    "updates": [
+      {
+        "Path": "rfc7951:Cisco-IOS-XE-process-cpu-oper:cpu-usage/cpu-utilization/five-seconds",
+        "values": {
+          "Cisco-IOS-XE-process-cpu-oper:cpu-usage/cpu-utilization/five-seconds": 1
+        }
+      }
+    ]
+  },
+  {
+    "source": "<DEVICE_ADDRESS>:9339",
+    "time": "2026-10-14T19:59:36.378245099-07:00",
+    "updates": [
+      {
+        "Path": "rfc7951:Cisco-IOS-XE-interfaces-oper:interfaces/interface[name=TenGigabitEthernet1/0/1]/oper-status",
+        "values": {
+          "Cisco-IOS-XE-interfaces-oper:interfaces/interface/oper-status": "if-oper-state-ready"
+        }
+      }
+    ]
+  }
+]

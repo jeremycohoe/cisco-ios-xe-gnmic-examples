@@ -201,3 +201,36 @@ capture:
 > confirm on your device.
 
 **Status:** Verified on C9300-24UX / IOS XE 26.1 / 2026-10-14.
+
+---
+
+## Multi-path subscribe
+
+**Goal:** Stream several leaves from different models in one subscription.
+
+```bash
+IFACE='TenGigabitEthernet1/0/1'
+gnmi subscribe \
+  --path "rfc7951:/Cisco-IOS-XE-interfaces-oper:interfaces/interface[name=${IFACE}]/oper-status" \
+  --path 'rfc7951:/Cisco-IOS-XE-process-cpu-oper:cpu-usage/cpu-utilization/five-seconds' \
+  --mode stream --stream-mode sample --sample-interval 5s --encoding json_ietf
+```
+
+**Observed response** (each path produces its own update, then a single
+`sync-response`, then both repeat each interval). Full capture:
+[captures/multi-path-subscribe.ndjson](../captures/multi-path-subscribe.ndjson).
+
+```json
+{"source":"<DEVICE_ADDRESS>:9339","time":"2026-10-14T20:00:10.329381-07:00","updates":[{"Path":"rfc7951:Cisco-IOS-XE-interfaces-oper:interfaces/interface[name=TenGigabitEthernet1/0/1]/oper-status","values":{"Cisco-IOS-XE-interfaces-oper:interfaces/interface/oper-status":"if-oper-state-ready"}}]}
+{"source":"<DEVICE_ADDRESS>:9339","time":"2026-10-14T20:00:10.331378-07:00","updates":[{"Path":"rfc7951:Cisco-IOS-XE-process-cpu-oper:cpu-usage/cpu-utilization/five-seconds","values":{"Cisco-IOS-XE-process-cpu-oper:cpu-usage/cpu-utilization/five-seconds":2}}]}
+{"sync-response":true}
+```
+
+**Change these fields:**
+- Add or remove `--path` arguments; each is streamed in the same subscription.
+- `IFACE` — the interface key; `--sample-interval` — the sampling period.
+
+**Verify:** both paths deliver an initial update, one shared `sync-response`
+follows, then each path repeats near the interval.
+
+**Status:** Verified on C9300-24UX / IOS XE 26.1 / 2026-10-14.

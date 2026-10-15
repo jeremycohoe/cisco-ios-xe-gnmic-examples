@@ -28,6 +28,8 @@ site-specific values. Check the requested path, the value type, and the state.
 | [Read environment sensors](cisco.md#cisco-environment-sensors) | `Cisco-IOS-XE-environment-oper:environment-sensors` |
 | [Read NTP status](cisco.md#cisco-ntp-status) | `Cisco-IOS-XE-ntp-oper:ntp-oper-data` |
 | [Read one configured telemetry stream leaf](cisco.md#cisco-mdt-config-stream-leaf) | `Cisco-IOS-XE-mdt-cfg:mdt-config-data` |
+| [Get several paths at once](cisco.md#multi-path-get) | multiple models |
+| [Request PROTO / JSON encoding](cisco.md#encodings-proto-and-json) | any |
 
 ### OpenConfig — [openconfig.md](openconfig.md)
 

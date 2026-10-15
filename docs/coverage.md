@@ -46,6 +46,9 @@ response.
 | Subscribe ON_CHANGE | Cisco interfaces-oper `admin-status` | Verified | [subscribe/cisco.md](../subscribe/cisco.md#cisco-interface-on-change-shutno-shut); `captures/interface-onchange-shut-no-shut.ndjson` |
 | Subscribe POLL | OpenConfig interface `state/cpu` | Verified | [subscribe/cisco.md](../subscribe/cisco.md#cisco-interface-cpu-flag-poll); `captures/interfaces-oper-poll.ndjson` |
 | Subscribe SAMPLE | Cisco memory-oper `memory-statistics` | Verified (C9300-24UX / 26.1) | [subscribe/cisco.md](../subscribe/cisco.md#cisco-memory-statistics-sample); `captures/memory-oper-sample.ndjson`; returned no values on the primary C9300 / 26.02.1 |
+| Get | Multi-path (hostname + CPU + interface) | Verified (C9300-24UX / 26.1) | [get/cisco.md](../get/cisco.md#multi-path-get); `captures/multi-path-get.json` |
+| Get | PROTO / JSON encoding | Verified (C9300-24UX / 26.1) | [get/cisco.md](../get/cisco.md#encodings-proto-and-json) |
+| Subscribe SAMPLE | Multi-path (interface + CPU) | Verified (C9300-24UX / 26.1) | [subscribe/cisco.md](../subscribe/cisco.md#multi-path-subscribe); `captures/multi-path-subscribe.ndjson` |
 
 ## Not collected or inconclusive
 
