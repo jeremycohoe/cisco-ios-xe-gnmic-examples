@@ -170,6 +170,11 @@ Full capture: [captures/poll-oper-status.ndjson](../captures/poll-oper-status.nd
 
 **Goal:** Poll a single interface leaf on demand.
 
+> This example uses the **OpenConfig** `state/cpu` leaf (the path has no
+> `rfc7951:` prefix, so it resolves to the `openconfig` origin). It is kept here
+> as a narrow-leaf POLL example; for the Cisco-model POLL see
+> [Cisco interface oper-status (POLL)](#cisco-interface-oper-status-poll) above.
+
 gNMIc's `POLL` mode is interactive: it prompts for a target and subscription.
 Press Enter to select each one and send a poll; repeat to poll again; `Ctrl+C`
 to exit. Use a keyed path to keep the output narrow.
