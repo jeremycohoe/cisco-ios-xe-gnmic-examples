@@ -38,6 +38,7 @@ response.
 | Set Update | OpenConfig interface `config/enabled` | Verified live and restored | [set/openconfig.md](../set/openconfig.md#openconfig-interface-enable) |
 | Set Update/Replace/Delete | Cisco native interface description | Verified live and restored | [set/cisco.md](../set/cisco.md#cisco-interface-description); port 4/0/1; clean SetResponses; `captures/native-interface-description-set.ndjson` |
 | Set Update/Replace/Delete | OpenConfig interface description | Verified live and restored | [set/openconfig.md](../set/openconfig.md#openconfig-interface-description); `captures/interface-descriptions-set.ndjson` |
+| Set Delete | Cisco native VLAN (lab 898) | Verified live | [set/cisco.md](../set/cisco.md#cisco-vlan-delete); created+deleted VLAN 898; timed out but applied after lock; `captures/vlan-delete.ndjson` |
 | Set Update/Replace/Delete | IETF interface description | Verified live and restored | [set/ietf.md](../set/ietf.md#ietf-interface-description); `captures/interface-descriptions-set.ndjson` |
 | Subscribe SAMPLE | OpenConfig interface `oper-status` | Verified | [subscribe/openconfig.md](../subscribe/openconfig.md) |
 | Subscribe SAMPLE | IETF `interfaces-state` `oper-status` | Verified | [subscribe/ietf.md](../subscribe/ietf.md); `captures/ietf-interfaces-sample.ndjson` |
@@ -45,6 +46,7 @@ response.
 | Subscribe ON_CHANGE | Cisco VLAN-oper VLAN 899 name | Verified | [subscribe/cisco.md](../subscribe/cisco.md#cisco-vlan-name-on-change); initial sync + change event; `captures/vlan-onchange-sync.ndjson`, `captures/vlan-onchange-event.ndjson` |
 | Subscribe ON_CHANGE | Cisco interfaces-oper `admin-status` | Verified | [subscribe/cisco.md](../subscribe/cisco.md#cisco-interface-on-change-shutno-shut); `captures/interface-onchange-shut-no-shut.ndjson` |
 | Subscribe POLL | OpenConfig interface `state/cpu` | Verified | [subscribe/cisco.md](../subscribe/cisco.md#cisco-interface-cpu-flag-poll); `captures/interfaces-oper-poll.ndjson` |
+| Subscribe POLL | Cisco / OpenConfig / IETF interface `oper-status` | Verified | [cisco](../subscribe/cisco.md#cisco-interface-oper-status-poll) / [openconfig](../subscribe/openconfig.md#openconfig-interface-poll) / [ietf](../subscribe/ietf.md#ietf-interface-poll); `captures/poll-oper-status.ndjson` |
 | Subscribe SAMPLE | Cisco memory-oper `memory-statistics` | Verified (C9300-24UX / 26.1) | [subscribe/cisco.md](../subscribe/cisco.md#cisco-memory-statistics-sample); `captures/memory-oper-sample.ndjson`; returned no values on the primary C9300 / 26.02.1 |
 | Get | Multi-path (hostname + CPU + interface) | Verified (C9300-24UX / 26.1) | [get/cisco.md](../get/cisco.md#multi-path-get); `captures/multi-path-get.json` |
 | Get | `json_ietf` / `json` / `proto` encodings | Verified (C9300-24UX / 26.1) | [get/cisco.md](../get/cisco.md#encodings-proto-and-json); same value in all three |
@@ -58,7 +60,6 @@ These are tracked here but intentionally not shown as examples. See
 
 | Operation | Model/path | Status | Reason |
 |---|---|---|---|
-| Set Delete | Cisco native VLAN name | Not collected | Would remove the lab VLAN 899 |
 | Set | gNMI cfg secure-port, MDT cfg, NTP config, other `-cfg` | Not collected | Need an exact approved path/value before any live Set |
 
 ## Subscription support from the device's MDT capability model

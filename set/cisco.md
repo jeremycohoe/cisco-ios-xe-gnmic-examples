@@ -208,10 +208,9 @@ gnmi set --replace \
 The SetResponse reported `REPLACE` and an immediate Get returned `GNMI-LAB`.
 Full pair: [captures/vlan-name-replace.ndjson](../captures/vlan-name-replace.ndjson).
 
-**Rollback / cleanup:** this example *creates* a lab VLAN. Delete was
-intentionally not exercised because it would remove VLAN 899. To remove a lab
-VLAN you created, send a Delete on the `vlan-list[id=...]` entry only after
-confirming nothing else depends on it.
+**Rollback / cleanup:** this example *creates* a lab VLAN. To remove a lab VLAN
+you created, see [Cisco VLAN Delete](#cisco-vlan-delete) below. Do **not** delete
+VLAN 899 if other examples depend on it.
 
 > The first live Update attempt timed out and a retry hit an IOS XE config-DB
 > lock before the write finally applied. See
@@ -223,6 +222,60 @@ A later Get confirmed the name persisted as `GNMI-LAB`:
 
 **Status:** Verified live on C9300 / IOS XE 26.02.1 / 2026-10-13. VLAN 899 is
 active and portless.
+
+---
+
+## Cisco VLAN Delete
+
+**Goal:** Delete a VLAN. Shown on a throwaway lab VLAN (`898`) so the documented
+VLAN 899 is untouched.
+
+> Deleting a VLAN removes it and any configuration under it. Only delete a lab
+> VLAN you created and that nothing else depends on.
+
+**Create a throwaway VLAN, then confirm it exists:**
+
+```bash
+VLAN_ID='898'
+gnmi set --timeout 90s --update \
+  "rfc7951:/Cisco-IOS-XE-native:native/vlan/Cisco-IOS-XE-vlan:vlan-list[id=${VLAN_ID}]/name:::string:::GNMI-DELETE-DEMO"
+gnmi get --path "rfc7951:/Cisco-IOS-XE-native:native/vlan/Cisco-IOS-XE-vlan:vlan-list[id=${VLAN_ID}]" --encoding json_ietf
+```
+
+The Get confirmed the entry:
+
+```json
+{"source":"<DEVICE_ADDRESS>:9339","updates":[{"Path":"rfc7951:Cisco-IOS-XE-native:native/vlan/Cisco-IOS-XE-vlan:vlan-list[id=898]","values":{"Cisco-IOS-XE-native:native/vlan/Cisco-IOS-XE-vlan:vlan-list":{"id":898,"name":"GNMI-DELETE-DEMO"}}}]}
+```
+
+**Command — Delete the VLAN list entry:**
+
+```bash
+VLAN_ID='898'
+gnmi set --timeout 90s --delete \
+  "rfc7951:/Cisco-IOS-XE-native:native/vlan/Cisco-IOS-XE-vlan:vlan-list[id=${VLAN_ID}]"
+```
+
+**Verify it is gone** (the list entry returns empty):
+
+```json
+{"source":"<DEVICE_ADDRESS>:9339","updates":[{"Path":"rfc7951:Cisco-IOS-XE-native:native/vlan/Cisco-IOS-XE-vlan:vlan-list[id=898]","values":{"Cisco-IOS-XE-native:native/vlan/Cisco-IOS-XE-vlan:vlan-list":{}}}]}
+```
+
+Full lifecycle capture:
+[captures/vlan-delete.ndjson](../captures/vlan-delete.ndjson).
+
+**Change these fields:**
+- `VLAN_ID` — the lab VLAN to delete.
+
+> Like other native writes on this device, the Delete returned a client
+> `DeadlineExceeded` and a retry hit a config-DB lock, but the Delete applied
+> once the lock cleared — a later Get showed the entry empty. **Get the path to
+> confirm** rather than trusting the timeout. See
+> [limitations](../docs/limitations.md#set-operations).
+
+**Status:** Verified live on C9300 / IOS XE 26.02.1 / 2026-10-14 (lab VLAN 898
+created and deleted; VLAN 899 untouched).
 
 ---
 

@@ -41,3 +41,36 @@ samples every three seconds. Full capture:
 the interval.
 
 **Status:** Verified on C9300 / IOS XE 26.02.1 / 2026-10-14 (port 4/0/1).
+
+---
+
+## IETF interface POLL
+
+**Goal:** Poll an interface's operational status on demand through IETF.
+
+`POLL` is model-independent (see also
+[Cisco](cisco.md#cisco-interface-oper-status-poll) and
+[OpenConfig](openconfig.md#openconfig-interface-poll)). It is interactive: press
+Enter to select the target and subscription and send a poll; `Ctrl+C` to exit.
+
+```bash
+IFACE='GigabitEthernet0/0'
+gnmi subscribe \
+  --path "rfc7951:/ietf-interfaces:interfaces-state/interface[name=${IFACE}]/oper-status" \
+  --mode poll
+```
+
+**Observed** (initial update, then sync). Full capture:
+[captures/poll-oper-status.ndjson](../captures/poll-oper-status.ndjson).
+
+```json
+{"source":"<DEVICE_ADDRESS>:9339","time":"2026-10-14T20:50:24.894018-07:00","updates":[{"Path":"rfc7951:ietf-interfaces:interfaces-state/interface[name=GigabitEthernet0/0]/oper-status","values":{"ietf-interfaces:interfaces-state/interface/oper-status":"up"}}]}
+{"sync-response":true}
+```
+
+**Change these fields:**
+- `IFACE` — the interface to poll.
+
+**Verify:** each poll returns the current `oper-status` (`up`/`down`/...).
+
+**Status:** Verified on C9300 / IOS XE 26.02.1 / 2026-10-14.

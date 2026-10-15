@@ -24,9 +24,10 @@ release-specific; confirm against your own device.
 - **`UnionReplace` is unavailable.** The device advertises gNMI `0.7.0`;
   `union_replace` was added to the gNMI specification in `0.10.0`. A local
   gNMIc flag of a similar name does not imply server support.
-- **Delete of the lab VLAN was not exercised.** Deleting
-  `vlan-list[id=899]` would remove the lab VLAN, so Delete was intentionally not
-  sent for that path.
+- **VLAN Delete** is shown on a throwaway lab VLAN (`898`), not on the
+  documented VLAN `899`, so the examples that rely on 899 are not disrupted. See
+  [set/cisco.md — Cisco VLAN Delete](../set/cisco.md#cisco-vlan-delete). The
+  Delete timed out client-side but applied once the config-DB lock cleared.
 
 ## Subscribe operations
 

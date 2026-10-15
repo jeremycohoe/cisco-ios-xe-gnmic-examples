@@ -1,0 +1,8 @@
+{"source":"<DEVICE_ADDRESS>:9339","time":"2026-10-14T20:49:23.759871-07:00","updates":[{"Path":"rfc7951:Cisco-IOS-XE-interfaces-oper:interfaces/interface[name=GigabitEthernet0/0]/oper-status","values":{"Cisco-IOS-XE-interfaces-oper:interfaces/interface/oper-status":"if-oper-state-ready"}}]}
+{"sync-response":true}
+{"source":"<DEVICE_ADDRESS>:9339","time":"2026-10-14T20:49:41.498791-07:00","updates":[{"Path":"rfc7951:Cisco-IOS-XE-interfaces-oper:interfaces/interface[name=GigabitEthernet0/0]/oper-status","values":{"Cisco-IOS-XE-interfaces-oper:interfaces/interface/oper-status":"if-oper-state-ready"}}]}
+{"source":"<DEVICE_ADDRESS>:9339","time":"2026-10-14T20:49:54.120276-07:00","updates":[{"Path":"openconfig:interfaces/interface[name=GigabitEthernet0/0]/state/oper-status","values":{"interfaces/interface/state/oper-status":"UP"}}]}
+{"sync-response":true}
+{"source":"<DEVICE_ADDRESS>:9339","time":"2026-10-14T20:50:13.969014-07:00","updates":[{"Path":"openconfig:interfaces/interface[name=GigabitEthernet0/0]/state/oper-status","values":{"interfaces/interface/state/oper-status":"UP"}}]}
+{"source":"<DEVICE_ADDRESS>:9339","time":"2026-10-14T20:50:24.894018-07:00","updates":[{"Path":"rfc7951:ietf-interfaces:interfaces-state/interface[name=GigabitEthernet0/0]/oper-status","values":{"ietf-interfaces:interfaces-state/interface/oper-status":"up"}}]}
+{"sync-response":true}

@@ -42,6 +42,7 @@ Verify → Rollback** (writes only).
 |---|---|---|---|
 | `Cisco-IOS-XE-native` | `native/hostname` | Update, Replace | ✅ [hostname](set/cisco.md#cisco-hostname-updatereplace) |
 | `Cisco-IOS-XE-native` | `native/vlan/.../vlan-list[id=<n>]/name` | Update, Replace | ✅ [VLAN name](set/cisco.md#cisco-vlan-name) |
+| `Cisco-IOS-XE-native` | `native/vlan/.../vlan-list[id=<n>]` | Delete | ✅ [VLAN delete](set/cisco.md#cisco-vlan-delete) |
 | `Cisco-IOS-XE-native` | `native/interface/<Type>[name=<id>]/description` | Update, Replace, Delete | ✅ [interface description](set/cisco.md#cisco-interface-description) |
 | `openconfig-interfaces` | `interfaces/interface[name=<if>]/config/enabled` | Update | ✅ [interface enable](set/openconfig.md#openconfig-interface-enable) |
 | `openconfig-interfaces` | `interfaces/interface[name=<if>]/config/description` | Update, Replace, Delete | ✅ [interface description](set/openconfig.md#openconfig-interface-description) |
@@ -56,6 +57,9 @@ Verify → Rollback** (writes only).
 | `Cisco-IOS-XE-interfaces-oper` | `interfaces/interface[name=<if>]/admin-status` | ONCE | ✅ [snapshot](subscribe/cisco.md#cisco-interface-once-snapshot) |
 | `Cisco-IOS-XE-interfaces-oper` | `interfaces/interface[name=<if>]/admin-status` | ON_CHANGE | ✅ [shut/no-shut events](subscribe/cisco.md#cisco-interface-on-change-shutno-shut) |
 | `openconfig-interfaces` | `interfaces/interface[name=<if>]/state/cpu` | POLL | ✅ [CPU flag poll](subscribe/cisco.md#cisco-interface-cpu-flag-poll) |
+| `Cisco-IOS-XE-interfaces-oper` | `interfaces/interface[name=<if>]/oper-status` | POLL | ✅ [oper-status poll](subscribe/cisco.md#cisco-interface-oper-status-poll) |
+| `openconfig-interfaces` | `interfaces/interface[name=<if>]/state/oper-status` | POLL | ✅ [oper-status poll](subscribe/openconfig.md#openconfig-interface-poll) |
+| `ietf-interfaces` | `interfaces-state/interface[name=<if>]/oper-status` | POLL | ✅ [oper-status poll](subscribe/ietf.md#ietf-interface-poll) |
 | `Cisco-IOS-XE-vlan-oper` | `vlans/vlan[id=<n>]/name` | ON_CHANGE | ✅ [VLAN name change](subscribe/cisco.md#cisco-vlan-name-on-change) |
 | `Cisco-IOS-XE-memory-oper` | `memory-statistics` | SAMPLE | ✅ [memory statistics](subscribe/cisco.md#cisco-memory-statistics-sample) |
 
@@ -145,6 +149,8 @@ gnmi set --update  'rfc7951:/Cisco-IOS-XE-native:native/hostname:::string:::ORIG
 # Cisco VLAN name: Update, Replace (lab VLAN only)
 gnmi set --timeout 45s --update 'rfc7951:/Cisco-IOS-XE-native:native/vlan/Cisco-IOS-XE-vlan:vlan-list[id=899]/name:::string:::GNMI-LAB'
 gnmi set --replace             'rfc7951:/Cisco-IOS-XE-native:native/vlan/Cisco-IOS-XE-vlan:vlan-list[id=899]/name:::string:::GNMI-LAB'
+# Cisco VLAN Delete (throwaway lab VLAN 898; timed out but applied after lock cleared)
+gnmi set --timeout 90s --delete 'rfc7951:/Cisco-IOS-XE-native:native/vlan/Cisco-IOS-XE-vlan:vlan-list[id=898]'
 # Cisco native interface description: Update, Replace, Delete
 gnmi set --update  'rfc7951:/Cisco-IOS-XE-native:native/interface/TwoGigabitEthernet[name=4/0/1]/description:::string:::GNMI-LAB-TEST'
 gnmi set --replace 'rfc7951:/Cisco-IOS-XE-native:native/interface/TwoGigabitEthernet[name=4/0/1]/description:::string:::GNMI-LAB-TEST'
@@ -174,6 +180,10 @@ gnmi subscribe --encoding json_ietf --path 'rfc7951:/Cisco-IOS-XE-interfaces-ope
 gnmi subscribe --path 'rfc7951:/Cisco-IOS-XE-vlan-oper:vlans/vlan[id=899]/name' --mode stream --stream-mode on_change
 # OpenConfig interface CPU flag (POLL, interactive)
 gnmi subscribe --path '/interfaces/interface[name=TenGigabitEthernet1/0/1]/state/cpu' --mode poll
+# POLL oper-status — same mode works on any model (Cisco / OpenConfig / IETF)
+gnmi subscribe --path 'rfc7951:/Cisco-IOS-XE-interfaces-oper:interfaces/interface[name=GigabitEthernet0/0]/oper-status' --mode poll
+gnmi subscribe --path 'openconfig:/interfaces/interface[name=GigabitEthernet0/0]/state/oper-status' --mode poll
+gnmi subscribe --path 'rfc7951:/ietf-interfaces:interfaces-state/interface[name=GigabitEthernet0/0]/oper-status' --mode poll
 # Cisco memory statistics (periodic sample)
 gnmi subscribe --path 'rfc7951:/Cisco-IOS-XE-memory-oper:memory-statistics' --mode stream --stream-mode sample --sample-interval 5s --encoding json_ietf
 # Multi-path subscribe (several models in one subscription)

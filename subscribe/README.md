@@ -22,6 +22,7 @@ first. Stop streaming commands with `Ctrl+C`.
 | [Stream interface up/down events](cisco.md#cisco-interface-on-change-shutno-shut) | on-change |
 | [Watch a VLAN name for changes](cisco.md#cisco-vlan-name-on-change) | on-change |
 | [Snapshot interface admin status](cisco.md#cisco-interface-once-snapshot) | ONCE |
+| [Poll interface oper-status](cisco.md#cisco-interface-oper-status-poll) | POLL |
 | [Poll an interface CPU flag](cisco.md#cisco-interface-cpu-flag-poll) | POLL |
 | [Sample memory statistics](cisco.md#cisco-memory-statistics-sample) | sample |
 | [Stream several paths at once](cisco.md#multi-path-subscribe) | sample |
@@ -31,12 +32,18 @@ first. Stop streaming commands with `Ctrl+C`.
 | Goal | Mode |
 |---|---|
 | [Periodically sample interface status](openconfig.md#openconfig-interface-periodic-sample) | sample |
+| [Poll interface oper-status](openconfig.md#openconfig-interface-poll) | POLL |
 
 ### IETF — [ietf.md](ietf.md)
 
 | Goal | Mode |
 |---|---|
 | [Periodically sample interface status](ietf.md#ietf-interface-periodic-sample) | sample |
+| [Poll interface oper-status](ietf.md#ietf-interface-poll) | POLL |
+
+> **POLL is model-independent** — the mode works on any gettable path. The three
+> POLL recipes above show the same operation on the Cisco, OpenConfig, and IETF
+> interface models.
 
 ## On-change support
 
