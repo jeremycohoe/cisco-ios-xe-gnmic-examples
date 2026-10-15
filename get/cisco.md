@@ -660,6 +660,21 @@ value is identical; the difference is on the wire (`proto` uses gNMI
 }
 ```
 
+To see the **native proto form**, print it as prototext
+(`--encoding proto --format prototext`). The value arrives as a scalar
+`TypedValue`, not a JSON blob. Raw captures (int, enum, string):
+[captures/proto-get-prototext.txt](../captures/proto-get-prototext.txt).
+
+```text
+update: {
+  path: { origin: "rfc7951"
+    elem: { name: "Cisco-IOS-XE-process-cpu-oper:cpu-usage" }
+    elem: { name: "cpu-utilization" }
+    elem: { name: "five-seconds" } }
+  val: { uint_val: 4 }
+}
+```
+
 The difference is more visible on **Subscribe**: with `--encoding proto` the
 device returns a `prefix` plus a relative leaf path. Full capture:
 [captures/proto-subscribe.ndjson](../captures/proto-subscribe.ndjson).

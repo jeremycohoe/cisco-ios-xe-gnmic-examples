@@ -30,9 +30,9 @@ OpenConfig/IETF and Cisco-native interface description SetResponse/Get
 sequences, final VLAN-name Get, interface counter Get, IETF periodic and ONCE
 samples, the keyed CPU-flag POLL response, a value-bearing memory-oper SAMPLE
 stream, multi-path Get and Subscribe responses, a PROTO-encoded subscribe
-sample, a VLAN create/delete lifecycle, interface oper-status POLL across the
-Cisco/OpenConfig/IETF models, and post-reload memory, environment-sensor, and
-NTP Gets.
+sample, the raw proto (prototext) Get form, a VLAN create/delete lifecycle,
+interface oper-status POLL across the Cisco/OpenConfig/IETF models, and
+post-reload memory, environment-sensor, and NTP Gets.
 Device and peer IP addresses are replaced with placeholders in operational
 captures; interface names are redacted in subscribe outputs except for the
 owner-selected `TwoGigabitEthernet4/0/1` shut/no-shut example. The MDT config

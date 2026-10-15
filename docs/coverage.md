@@ -50,6 +50,7 @@ response.
 | Subscribe SAMPLE | Cisco memory-oper `memory-statistics` | Verified (C9300-24UX / 26.1) | [subscribe/cisco.md](../subscribe/cisco.md#cisco-memory-statistics-sample); `captures/memory-oper-sample.ndjson`; returned no values on the primary C9300 / 26.02.1 |
 | Get | Multi-path (hostname + CPU + interface) | Verified (C9300-24UX / 26.1) | [get/cisco.md](../get/cisco.md#multi-path-get); `captures/multi-path-get.json` |
 | Get | `json_ietf` / `json` / `proto` encodings | Verified (C9300-24UX / 26.1) | [get/cisco.md](../get/cisco.md#encodings-proto-and-json); same value in all three |
+| Get | PROTO native form (prototext) | Verified (C9300 / 26.02.1) | [get/cisco.md](../get/cisco.md#encodings-proto-and-json); scalar TypedValue (uint_val/string_val); `captures/proto-get-prototext.txt` |
 | Subscribe SAMPLE | PROTO encoding (CPU leaf) | Verified (C9300-24UX / 26.1) | [get/cisco.md](../get/cisco.md#encodings-proto-and-json); `captures/proto-subscribe.ndjson`; prefix + relative leaf |
 | Subscribe SAMPLE | Multi-path (interface + CPU) | Verified (C9300-24UX / 26.1) | [subscribe/cisco.md](../subscribe/cisco.md#multi-path-subscribe); `captures/multi-path-subscribe.ndjson` |
 

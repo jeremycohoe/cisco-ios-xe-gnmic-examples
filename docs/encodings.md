@@ -11,7 +11,10 @@ decodes every encoding to the same value, so responses are not re-captured per
 encoding:
 
 - **Get:** `json_ietf`, `json`, and `proto` return the same decoded value; the
-  difference is only on the wire.
+  difference is only on the wire. To see the raw proto message (a scalar
+  `TypedValue` such as `uint_val`/`string_val`), add `--format prototext` —
+  captured in
+  [captures/proto-get-prototext.txt](../captures/proto-get-prototext.txt).
 - **Subscribe:** `json_ietf`/`json` look the same; **`proto`** returns a `prefix`
   plus a relative leaf path (see
   [captures/proto-subscribe.ndjson](../captures/proto-subscribe.ndjson)).

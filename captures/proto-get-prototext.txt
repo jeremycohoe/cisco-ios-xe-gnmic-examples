@@ -1,0 +1,58 @@
+# gNMI PROTO-encoded Get responses printed as prototext (gnmic --encoding proto --format prototext).
+# This shows the native proto form: a path.elem array plus a scalar TypedValue
+# (uint_val, string_val, ...) instead of a JSON blob. Verified on C9300 / IOS XE 26.02.1.
+# Device address and hostname are redacted.
+
+# --- Cisco CPU five-seconds (integer -> uint_val) ---
+notification: {
+  timestamp: 1792037115369967412
+  prefix: {}
+  update: {
+    path: {
+      origin: "rfc7951"
+      elem: { name: "Cisco-IOS-XE-process-cpu-oper:cpu-usage" }
+      elem: { name: "cpu-utilization" }
+      elem: { name: "five-seconds" }
+    }
+    val: {
+      uint_val: 4
+    }
+  }
+}
+
+# --- OpenConfig interface oper-status (enum -> string_val) ---
+notification: {
+  timestamp: 1792037130138080336
+  prefix: {}
+  update: {
+    path: {
+      origin: "openconfig"
+      elem: { name: "interfaces" }
+      elem: {
+        name: "interface"
+        key: { key: "name" value: "GigabitEthernet0/0" }
+      }
+      elem: { name: "state" }
+      elem: { name: "oper-status" }
+    }
+    val: {
+      string_val: "UP"
+    }
+  }
+}
+
+# --- Cisco native hostname (string -> string_val; value redacted) ---
+notification: {
+  timestamp: 1792037130546476328
+  prefix: {}
+  update: {
+    path: {
+      origin: "rfc7951"
+      elem: { name: "Cisco-IOS-XE-native:native" }
+      elem: { name: "hostname" }
+    }
+    val: {
+      string_val: "<REDACTED_HOSTNAME>"
+    }
+  }
+}
