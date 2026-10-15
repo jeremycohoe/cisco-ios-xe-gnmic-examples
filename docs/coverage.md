@@ -74,8 +74,9 @@ These are tracked here but intentionally not shown as examples. See
   general interface state and counters not). IETF `interfaces` and
   `Cisco-IOS-XE-native` have no on-change override and use the periodic default.
 - Cisco IOS XE 26 documents streaming `SAMPLE` and `ON_CHANGE`. This C9300 also
-  accepted `POLL` and `ONCE`; target-defined returned no values in a ~10-second
-  trial and remains inconclusive.
+  accepted `POLL` and `ONCE`; `target-defined` returned no values (not even an
+  initial update) on two units (C9300 / 26.02.1 and C9300-24UX / 26.1) and is
+  treated as unusable here \u2014 use `sample` or `on_change`.
 
 ## Device state note
 
