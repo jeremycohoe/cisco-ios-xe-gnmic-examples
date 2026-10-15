@@ -37,12 +37,6 @@ release-specific; confirm against your own device.
   [subscribe/cisco.md](../subscribe/cisco.md#cisco-memory-statistics-sample).
   Streaming support for operational trees varies by release; confirm on your
   device.
-- **Target-defined stream returned no data.** A `target-defined` subscription to
-  `Cisco-IOS-XE-interfaces-oper` `admin-status` produced nothing at all — not
-  even an initial update — confirmed on two units (C9300 / IOS XE 26.02.1 and
-  C9300-24UX / IOS XE 26.1), while `sample` and `on_change` on the same leaf
-  returned data immediately. Treat target-defined as unusable for this path and
-  use `sample` or `on_change` instead.
 - **On-change support is path-specific.** On-change works only where the
   device's `Cisco-IOS-XE-mdt-capabilities-oper` list enables it. OpenConfig
   general interface state/counters, IETF `ietf-interfaces`, and

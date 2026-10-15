@@ -55,7 +55,6 @@ These are tracked here but intentionally not shown as examples. See
 | Operation | Model/path | Status | Reason |
 |---|---|---|---|
 | Set Delete | Cisco native VLAN name | Not collected | Would remove the lab VLAN 899 |
-| Subscribe TARGET_DEFINED | Cisco interfaces-oper `admin-status` | No data | No values at all (not even an initial update); confirmed on two units (C9300 / 26.02.1 and C9300-24UX / 26.1); use sample/on_change |
 | Set | gNMI cfg secure-port, MDT cfg, NTP config, other `-cfg` | Not collected | Need an exact approved path/value before any live Set |
 
 ## Subscription support from the device's MDT capability model
@@ -74,9 +73,7 @@ These are tracked here but intentionally not shown as examples. See
   general interface state and counters not). IETF `interfaces` and
   `Cisco-IOS-XE-native` have no on-change override and use the periodic default.
 - Cisco IOS XE 26 documents streaming `SAMPLE` and `ON_CHANGE`. This C9300 also
-  accepted `POLL` and `ONCE`; `target-defined` returned no values (not even an
-  initial update) on two units (C9300 / 26.02.1 and C9300-24UX / 26.1) and is
-  treated as unusable here \u2014 use `sample` or `on_change`.
+  accepted `POLL` and `ONCE`.
 
 ## Device state note
 

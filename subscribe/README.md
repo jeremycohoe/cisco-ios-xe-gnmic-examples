@@ -57,5 +57,5 @@ gnmi get \
 Full sanitized capability response:
 [captures/mdt-capabilities-get.json](../captures/mdt-capabilities-get.json).
 
-For modes and paths that did not work on this device (memory periodic,
-target-defined), see [docs/limitations.md](../docs/limitations.md#subscribe-operations).
+For on-change path support and other device-specific streaming behavior, see
+[docs/limitations.md](../docs/limitations.md#subscribe-operations).
