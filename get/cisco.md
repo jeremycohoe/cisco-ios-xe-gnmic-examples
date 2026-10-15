@@ -639,30 +639,44 @@ hostname redacted). Full capture:
 ## Encodings (PROTO and JSON)
 
 **Goal:** Request a different wire encoding. Every other recipe uses
-`json_ietf`; the device also accepts `proto` and `json`.
+`json_ietf`; the device also accepts `json` and `proto`.
 
 ```bash
-gnmi get \
-  --path 'rfc7951:/Cisco-IOS-XE-process-cpu-oper:cpu-usage/cpu-utilization/five-seconds' \
-  --encoding proto
+P='rfc7951:/Cisco-IOS-XE-process-cpu-oper:cpu-usage/cpu-utilization/five-seconds'
+gnmi get --path "$P" --encoding json_ietf
+gnmi get --path "$P" --encoding json
+gnmi get --path "$P" --encoding proto
 ```
 
-**Observed:** with `--encoding proto` the value arrives as a gNMI `TypedValue`
-scalar (gNMIc decodes it for display):
+**Observed:** all three succeeded and returned the same value (`49` at capture
+time). gNMIc decodes each encoding to the same readable output, so the leaf
+value is identical; the difference is on the wire (`proto` uses gNMI
+`TypedValue` scalars instead of a JSON blob):
 
 ```json
 {
   "Path": "rfc7951:Cisco-IOS-XE-process-cpu-oper:cpu-usage/cpu-utilization/five-seconds",
-  "values": { "Cisco-IOS-XE-process-cpu-oper:cpu-usage/cpu-utilization/five-seconds": 2 }
+  "values": { "Cisco-IOS-XE-process-cpu-oper:cpu-usage/cpu-utilization/five-seconds": 49 }
 }
 ```
 
+The difference is more visible on **Subscribe**: with `--encoding proto` the
+device returns a `prefix` plus a relative leaf path. Full capture:
+[captures/proto-subscribe.ndjson](../captures/proto-subscribe.ndjson).
+
+```json
+{"source":"<DEVICE_ADDRESS>:9339","prefix":"rfc7951:Cisco-IOS-XE-process-cpu-oper:cpu-usage/cpu-utilization","updates":[{"Path":"five-seconds","values":{"five-seconds":8}}]}
+{"sync-response":true}
+```
+
 **Change these fields:**
-- `--encoding` — `json_ietf` (default here), `json`, or `proto`.
+- `--encoding` — `json_ietf` (default here), `json`, or `proto`. Works on both
+  `get` and `subscribe`.
 
 **Note:** keep the full `rfc7951:/...` (or `openconfig:/...`) path prefix with
 `proto`; dropping it returns `InvalidArgument ... unexpected prefix`. Confirm
 advertised encodings with `gnmi capabilities` (see
 [docs/model-inventory.md](../docs/model-inventory.md#encodings)).
 
-**Status:** Verified on C9300-24UX / IOS XE 26.1 / 2026-10-14.
+**Status:** Verified on C9300-24UX / IOS XE 26.1 / 2026-10-14 (Get in all three
+encodings; Subscribe in `json_ietf` and `proto`).

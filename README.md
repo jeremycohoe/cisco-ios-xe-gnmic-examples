@@ -59,6 +59,14 @@ Verify → Rollback** (writes only).
 | `Cisco-IOS-XE-vlan-oper` | `vlans/vlan[id=<n>]/name` | ON_CHANGE | ✅ [VLAN name change](subscribe/cisco.md#cisco-vlan-name-on-change) |
 | `Cisco-IOS-XE-memory-oper` | `memory-statistics` | SAMPLE | ✅ [memory statistics](subscribe/cisco.md#cisco-memory-statistics-sample) |
 
+### Techniques (across models)
+
+| Technique | What it does | Recipe |
+|---|---|---|
+| Multi-path Get | Several leaves from different models in one Get | ✅ [get/cisco.md](get/cisco.md#multi-path-get) |
+| Multi-path Subscribe | Several leaves streamed in one subscription | ✅ [subscribe/cisco.md](subscribe/cisco.md#multi-path-subscribe) |
+| Encodings (`json_ietf` / `json` / `proto`) | Request a different wire encoding on Get or Subscribe | ✅ [get/cisco.md](get/cisco.md#encodings-proto-and-json) |
+
 Placeholders: `<Type>` = native interface type (e.g. `TwoGigabitEthernet`);
 `<if>` = full interface name/key; `<n>` = VLAN ID; `<id>` = list key. All
 XPaths use the `rfc7951:` / `openconfig:` origin shown in each recipe.
