@@ -74,9 +74,11 @@ default to `json_ietf`. Details: [get/cisco.md — Encodings](get/cisco.md#encod
 
 | Operation | `json_ietf` | `json` | `proto` |
 |---|---|---|---|
-| **Get** | ✅ | ✅ | ✅ |
-| **Subscribe** (sample) | ✅ | ✅ | ✅ |
-| **Set** | ✅ (typed values) | not exercised | not exercised |
+| **Get** | [✅](get/cisco.md#encodings-proto-and-json) | [✅](get/cisco.md#encodings-proto-and-json) | [✅](get/cisco.md#encodings-proto-and-json) |
+| **Subscribe** (sample) | [✅](subscribe/openconfig.md#openconfig-interface-periodic-sample) | [✅](get/cisco.md#encodings-proto-and-json) | [✅](get/cisco.md#encodings-proto-and-json) ([capture](captures/proto-subscribe.ndjson)) |
+| **Set** | [✅](set/cisco.md#cisco-hostname-updatereplace) (typed values) | not exercised | not exercised |
+
+Each ✅ links to the example that was run on the device.
 
 Placeholders: `<Type>` = native interface type (e.g. `TwoGigabitEthernet`);
 `<if>` = full interface name/key; `<n>` = VLAN ID; `<id>` = list key. All
