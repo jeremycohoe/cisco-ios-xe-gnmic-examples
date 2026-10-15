@@ -678,5 +678,6 @@ device returns a `prefix` plus a relative leaf path. Full capture:
 advertised encodings with `gnmi capabilities` (see
 [docs/model-inventory.md](../docs/model-inventory.md#encodings)).
 
-**Status:** Verified on C9300-24UX / IOS XE 26.1 / 2026-10-14 (Get in all three
-encodings; Subscribe in `json_ietf` and `proto`).
+**Status:** Verified on C9300-24UX / IOS XE 26.1 / 2026-10-14 (Get and Subscribe
+each verified in `json_ietf`, `json`, and `proto`). See the
+[support matrix](../docs/model-inventory.md#verified-operation--encoding-support).

@@ -65,7 +65,7 @@ Verify → Rollback** (writes only).
 |---|---|---|
 | Multi-path Get | Several leaves from different models in one Get | ✅ [get/cisco.md](get/cisco.md#multi-path-get) |
 | Multi-path Subscribe | Several leaves streamed in one subscription | ✅ [subscribe/cisco.md](subscribe/cisco.md#multi-path-subscribe) |
-| Encodings (`json_ietf` / `json` / `proto`) | Request a different wire encoding on Get or Subscribe | ✅ [get/cisco.md](get/cisco.md#encodings-proto-and-json) |
+| Encodings (`json_ietf` / `json` / `proto`) | Request a different wire encoding on Get or Subscribe | ✅ [recipe](get/cisco.md#encodings-proto-and-json) · [support matrix](docs/model-inventory.md#verified-operation--encoding-support) |
 
 Placeholders: `<Type>` = native interface type (e.g. `TwoGigabitEthernet`);
 `<if>` = full interface name/key; `<n>` = VLAN ID; `<id>` = list key. All

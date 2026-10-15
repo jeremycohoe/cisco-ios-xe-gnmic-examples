@@ -30,17 +30,31 @@ path below.
 ## Encodings
 
 The lab devices advertised three encodings in Capabilities: **`JSON`**,
-**`JSON_IETF`**, and **`PROTO`**.
+**`JSON_IETF`**, and **`PROTO`**. All examples in this guide default to
+`json_ietf`; pass `--encoding` to request another.
 
-- Every example in this guide uses **`--encoding json_ietf`** (RFC 7951). It is
-  the most portable and human-readable choice for IOS XE and the one Cisco's
-  gNMI guide documents for Get/Set.
-- **`JSON`** is also accepted; the main difference is namespace qualification of
-  keys (RFC 7951 prefixes).
-- **`PROTO`** uses gNMI `TypedValue` scalars instead of a JSON blob. It is
-  supported for Subscribe and is more compact on the wire; `gnmic` can request
-  it with `--encoding proto`. PROTO and JSON examples are planned as a follow-up
-  and are not yet captured here.
+### Verified operation × encoding support
+
+Verified on C9300-24UX / IOS XE 26.1 against the CPU utilization leaf:
+
+| Operation | `json_ietf` | `json` | `proto` |
+|---|---|---|---|
+| **Get** | ✅ | ✅ | ✅ |
+| **Subscribe** (sample) | ✅ | ✅ | ✅ |
+| **Set** | ✅ (typed values) | not exercised | not exercised |
+
+See the runnable recipe: [get/cisco.md — Encodings](../get/cisco.md#encodings-proto-and-json).
+
+Notes:
+- `json_ietf` (RFC 7951) is the most portable, human-readable choice and the one
+  Cisco's gNMI guide documents for Get/Set.
+- `json` differs mainly in namespace qualification of keys.
+- `proto` uses gNMI `TypedValue` scalars instead of a JSON blob — more compact on
+  the wire. On Get, gNMIc decodes it to the same value; on Subscribe it returns a
+  `prefix` plus a relative leaf path. Keep the full `rfc7951:/...` or
+  `openconfig:/...` path prefix with `proto`.
+- Set payloads use typed values (e.g. `:::string:::NAME`); `json`/`proto` were
+  not separately exercised for Set.
 
 Confirm which encodings your device advertises with `gnmi capabilities`.
 
