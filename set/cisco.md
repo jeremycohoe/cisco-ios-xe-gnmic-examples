@@ -212,10 +212,11 @@ Full pair: [captures/vlan-name-replace.ndjson](../captures/vlan-name-replace.ndj
 you created, see [Cisco VLAN Delete](#cisco-vlan-delete) below. Do **not** delete
 VLAN 899 if other examples depend on it.
 
-> The first live Update attempt timed out and a retry hit an IOS XE config-DB
-> lock before the write finally applied. See
-> [limitations](../docs/limitations.md#set-operations) for the full timeout and
-> lock handling guidance.
+> On a quiescent device these native VLAN writes complete cleanly in about 1
+> second. The first live attempt captured here timed out under config-DB
+> contention and a retry hit a lock before the write applied — see
+> [limitations](../docs/limitations.md#set-operations). Either way, **Get the
+> path to confirm** the result.
 
 A later Get confirmed the name persisted as `GNMI-LAB`:
 [captures/vlan-name-final-get.ndjson](../captures/vlan-name-final-get.ndjson).
@@ -268,11 +269,11 @@ Full lifecycle capture:
 **Change these fields:**
 - `VLAN_ID` — the lab VLAN to delete.
 
-> Like other native writes on this device, the Delete returned a client
-> `DeadlineExceeded` and a retry hit a config-DB lock, but the Delete applied
-> once the lock cleared — a later Get showed the entry empty. **Get the path to
-> confirm** rather than trusting the timeout. See
-> [limitations](../docs/limitations.md#set-operations).
+> This Delete initially returned a client `DeadlineExceeded` and a retry hit a
+> config-DB lock, but it applied once the lock cleared (a later Get showed the
+> entry empty). On a quiescent device native writes usually complete in ~1s;
+> under contention they can time out while still applying. **Get the path to
+> confirm.** See [limitations](../docs/limitations.md#set-operations).
 
 **Status:** Verified live on C9300 / IOS XE 26.02.1 / 2026-10-14 (lab VLAN 898
 created and deleted; VLAN 899 untouched).

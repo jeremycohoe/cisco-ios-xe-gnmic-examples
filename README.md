@@ -149,7 +149,7 @@ gnmi set --update  'rfc7951:/Cisco-IOS-XE-native:native/hostname:::string:::ORIG
 # Cisco VLAN name: Update, Replace (lab VLAN only)
 gnmi set --timeout 45s --update 'rfc7951:/Cisco-IOS-XE-native:native/vlan/Cisco-IOS-XE-vlan:vlan-list[id=899]/name:::string:::GNMI-LAB'
 gnmi set --replace             'rfc7951:/Cisco-IOS-XE-native:native/vlan/Cisco-IOS-XE-vlan:vlan-list[id=899]/name:::string:::GNMI-LAB'
-# Cisco VLAN Delete (throwaway lab VLAN 898; timed out but applied after lock cleared)
+# Cisco VLAN Delete (throwaway lab VLAN 898; Get the path to confirm after any native-write timeout)
 gnmi set --timeout 90s --delete 'rfc7951:/Cisco-IOS-XE-native:native/vlan/Cisco-IOS-XE-vlan:vlan-list[id=898]'
 # Cisco native interface description: Update, Replace, Delete
 gnmi set --update  'rfc7951:/Cisco-IOS-XE-native:native/interface/TwoGigabitEthernet[name=4/0/1]/description:::string:::GNMI-LAB-TEST'

@@ -15,12 +15,15 @@ release-specific; confirm against your own device.
   still held the configuration lock returned
   `code = Unavailable desc = Database is locked for writing`. Wait for the lock
   to clear, confirm state with Get, then retry.
-- **Native VLAN-name writes are slow.** On this device, `Cisco-IOS-XE-native`
-  VLAN-name Update/Replace consistently returned a client `DeadlineExceeded`
-  (even at a 120s timeout) yet applied a short time later. By contrast,
-  `Cisco-IOS-XE-native` interface-description Update/Replace/Delete returned
-  clean SetResponses with no timeout. Always Get the path to confirm the actual
-  result after a native write.
+- **Native writes can time out intermittently under contention.** On a
+  quiescent device, `Cisco-IOS-XE-native` VLAN-name and hostname
+  Update/Replace/Delete complete cleanly in about **1 second**. However, during
+  config-database contention — concurrent transactions, immediately after a
+  reload, or rapid successive writes (for example while triggering an on-change
+  event) — the same write can return a client `DeadlineExceeded` while the
+  commit finishes in the background, and a retry may hit the config-DB lock. The
+  change still applies. Always **Get the path to confirm** the actual result
+  after a native write rather than trusting the timeout.
 - **`UnionReplace` is unavailable.** The device advertises gNMI `0.7.0`;
   `union_replace` was added to the gNMI specification in `0.10.0`. A local
   gNMIc flag of a similar name does not imply server support.
