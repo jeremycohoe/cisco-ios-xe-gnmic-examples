@@ -82,6 +82,109 @@ Placeholders: `<Type>` = native interface type (e.g. `TwoGigabitEthernet`);
 `<if>` = full interface name/key; `<n>` = VLAN ID; `<id>` = list key. All
 XPaths use the `rfc7951:` / `openconfig:` origin shown in each recipe.
 
+## All example commands
+
+Every verified command in one place. They use the `gnmi()` helper from
+[Connect and authenticate](#connect-and-authenticate); change the example
+interface names, VLAN IDs, and values for your device. Each has a full recipe
+(command + observed response + rollback) linked from the matrix above.
+
+```bash
+# ========================= GET (snapshot) =========================
+# Cisco hostname
+gnmi get --path 'rfc7951:/Cisco-IOS-XE-native:native/hostname' --encoding json_ietf
+# Cisco interface description (native)
+gnmi get --path 'rfc7951:/Cisco-IOS-XE-native:native/interface/GigabitEthernet[name=1/0/1]/description' --encoding json_ietf
+# Cisco VLAN configuration entry
+gnmi get --path 'rfc7951:/Cisco-IOS-XE-native:native/vlan/Cisco-IOS-XE-vlan:vlan-list[id=899]' --encoding json_ietf
+# Cisco VLAN operational state and ports
+gnmi get --path 'rfc7951:/Cisco-IOS-XE-vlan-oper:vlans/vlan[id=899]' --encoding json_ietf
+gnmi get --path 'rfc7951:/Cisco-IOS-XE-vlan-oper:vlans/vlan[id=899]/ports' --encoding json_ietf
+# Cisco interface operational status
+gnmi get --path 'rfc7951:/Cisco-IOS-XE-interfaces-oper:interfaces/interface[name=Vlan899]/oper-status' --encoding json_ietf
+# Cisco interface counters
+gnmi get --path 'rfc7951:/Cisco-IOS-XE-interfaces-oper:interfaces/interface[name=TenGigabitEthernet1/0/1]/statistics' --encoding json_ietf
+# Cisco secure gNMI port
+gnmi get --path 'rfc7951:/Cisco-IOS-XE-gnmi-cfg:gnmi-cfg-data/config/secure-port' --encoding json_ietf
+# Cisco CPU 5-second utilization
+gnmi get --path 'rfc7951:/Cisco-IOS-XE-process-cpu-oper:cpu-usage/cpu-utilization/five-seconds' --encoding json_ietf
+# Cisco memory pools
+gnmi get --path 'rfc7951:/Cisco-IOS-XE-memory-oper:memory-statistics' --encoding json_ietf
+# Cisco environment sensors
+gnmi get --path 'rfc7951:/Cisco-IOS-XE-environment-oper:environment-sensors' --encoding json_ietf
+# Cisco NTP status
+gnmi get --path 'rfc7951:/Cisco-IOS-XE-ntp-oper:ntp-oper-data/ntp-status-info' --encoding json_ietf
+# Cisco MDT config stream leaf
+gnmi get --path 'rfc7951:/Cisco-IOS-XE-mdt-cfg:mdt-config-data/mdt-subscription[subscription-id=REPLACE_WITH_SUBSCRIPTION_ID]/base/stream' --encoding json_ietf
+# Cisco MDT on-change capabilities
+gnmi get --path 'rfc7951:/Cisco-IOS-XE-mdt-capabilities-oper:mdt-capabilities-oper-data' --encoding json_ietf
+# OpenConfig interface operational status
+gnmi get --path 'openconfig:/interfaces/interface[name=Vlan899]/state/oper-status' --encoding json_ietf
+# IETF interface operational status
+gnmi get --path 'rfc7951:/ietf-interfaces:interfaces-state/interface[name=Vlan899]/oper-status' --encoding json_ietf
+# Multi-path Get (several models in one request)
+gnmi get \
+  --path 'rfc7951:/Cisco-IOS-XE-native:native/hostname' \
+  --path 'rfc7951:/Cisco-IOS-XE-process-cpu-oper:cpu-usage/cpu-utilization/five-seconds' \
+  --path 'rfc7951:/Cisco-IOS-XE-interfaces-oper:interfaces/interface[name=TenGigabitEthernet1/0/1]/oper-status' \
+  --encoding json_ietf
+# Encodings: same Get in json_ietf / json / proto
+gnmi get --path 'rfc7951:/Cisco-IOS-XE-process-cpu-oper:cpu-usage/cpu-utilization/five-seconds' --encoding json_ietf
+gnmi get --path 'rfc7951:/Cisco-IOS-XE-process-cpu-oper:cpu-usage/cpu-utilization/five-seconds' --encoding json
+gnmi get --path 'rfc7951:/Cisco-IOS-XE-process-cpu-oper:cpu-usage/cpu-utilization/five-seconds' --encoding proto
+
+# ===================== SET (Get first, verify, roll back) =====================
+# Cisco hostname: Update, Replace, rollback to the saved original
+gnmi set --update  'rfc7951:/Cisco-IOS-XE-native:native/hostname:::string:::GNMIC-LAB'
+gnmi set --replace 'rfc7951:/Cisco-IOS-XE-native:native/hostname:::string:::GNMIC-REPLACE-DEMO'
+gnmi set --update  'rfc7951:/Cisco-IOS-XE-native:native/hostname:::string:::ORIGINAL_HOSTNAME'
+# Cisco VLAN name: Update, Replace (lab VLAN only)
+gnmi set --timeout 45s --update 'rfc7951:/Cisco-IOS-XE-native:native/vlan/Cisco-IOS-XE-vlan:vlan-list[id=899]/name:::string:::GNMI-LAB'
+gnmi set --replace             'rfc7951:/Cisco-IOS-XE-native:native/vlan/Cisco-IOS-XE-vlan:vlan-list[id=899]/name:::string:::GNMI-LAB'
+# Cisco native interface description: Update, Replace, Delete
+gnmi set --update  'rfc7951:/Cisco-IOS-XE-native:native/interface/TwoGigabitEthernet[name=4/0/1]/description:::string:::GNMI-LAB-TEST'
+gnmi set --replace 'rfc7951:/Cisco-IOS-XE-native:native/interface/TwoGigabitEthernet[name=4/0/1]/description:::string:::GNMI-LAB-TEST'
+gnmi set --delete  'rfc7951:/Cisco-IOS-XE-native:native/interface/TwoGigabitEthernet[name=4/0/1]/description'
+# OpenConfig interface enable: shut / no-shut
+gnmi set --encoding json_ietf --update 'openconfig:/interfaces/interface[name=TwoGigabitEthernet4/0/1]/config/enabled:::bool:::false'
+gnmi set --encoding json_ietf --update 'openconfig:/interfaces/interface[name=TwoGigabitEthernet4/0/1]/config/enabled:::bool:::true'
+# OpenConfig interface description: Update, Replace, Delete
+gnmi set --update  'openconfig:/interfaces/interface[name=TwoGigabitEthernet4/0/1]/config/description:::string:::GNMI-LAB-TEST'
+gnmi set --replace 'openconfig:/interfaces/interface[name=TwoGigabitEthernet4/0/1]/config/description:::string:::GNMI-LAB-TEST'
+gnmi set --delete  'openconfig:/interfaces/interface[name=TwoGigabitEthernet4/0/1]/config/description'
+# IETF interface description: Update, Replace, Delete
+gnmi set --update  'rfc7951:/ietf-interfaces:interfaces/interface[name=TwoGigabitEthernet4/0/1]/description:::string:::GNMI-LAB-TEST'
+gnmi set --replace 'rfc7951:/ietf-interfaces:interfaces/interface[name=TwoGigabitEthernet4/0/1]/description:::string:::GNMI-LAB-TEST'
+gnmi set --delete  'rfc7951:/ietf-interfaces:interfaces/interface[name=TwoGigabitEthernet4/0/1]/description'
+
+# ===================== SUBSCRIBE (Ctrl+C to stop streams) =====================
+# OpenConfig interface oper-status (periodic sample)
+gnmi subscribe --path 'openconfig:/interfaces/interface[name=TenGigabitEthernet1/0/1]/state/oper-status' --mode stream --stream-mode sample --sample-interval 5s
+# IETF interface oper-status (periodic sample)
+gnmi subscribe --path 'rfc7951:/ietf-interfaces:interfaces-state/interface[name=TenGigabitEthernet1/0/1]/oper-status' --mode stream --stream-mode sample --sample-interval 3s
+# Cisco interface admin-status (ONCE snapshot)
+gnmi subscribe --path 'rfc7951:/Cisco-IOS-XE-interfaces-oper:interfaces/interface[name=TenGigabitEthernet1/0/1]/admin-status' --mode once
+# Cisco interface admin-status (on-change)
+gnmi subscribe --encoding json_ietf --path 'rfc7951:/Cisco-IOS-XE-interfaces-oper:interfaces/interface[name=TenGigabitEthernet1/0/1]/admin-status' --mode stream --stream-mode on_change
+# Cisco VLAN name (on-change)
+gnmi subscribe --path 'rfc7951:/Cisco-IOS-XE-vlan-oper:vlans/vlan[id=899]/name' --mode stream --stream-mode on_change
+# OpenConfig interface CPU flag (POLL, interactive)
+gnmi subscribe --path '/interfaces/interface[name=TenGigabitEthernet1/0/1]/state/cpu' --mode poll
+# Cisco memory statistics (periodic sample)
+gnmi subscribe --path 'rfc7951:/Cisco-IOS-XE-memory-oper:memory-statistics' --mode stream --stream-mode sample --sample-interval 5s --encoding json_ietf
+# Multi-path subscribe (several models in one subscription)
+gnmi subscribe \
+  --path 'rfc7951:/Cisco-IOS-XE-interfaces-oper:interfaces/interface[name=TenGigabitEthernet1/0/1]/oper-status' \
+  --path 'rfc7951:/Cisco-IOS-XE-process-cpu-oper:cpu-usage/cpu-utilization/five-seconds' \
+  --mode stream --stream-mode sample --sample-interval 5s --encoding json_ietf
+# PROTO-encoded subscribe
+gnmi subscribe --path 'rfc7951:/Cisco-IOS-XE-process-cpu-oper:cpu-usage/cpu-utilization/five-seconds' --mode stream --stream-mode sample --sample-interval 5s --encoding proto
+```
+
+> Reminder: run `get` before any `set`, verify with `get` after, and keep the
+> rollback value. See [docs/limitations.md](docs/limitations.md) for the
+> Set-timeout and config-lock behavior.
+
 ## Reference material
 
 - [docs/model-inventory.md](docs/model-inventory.md) — advertised models and
