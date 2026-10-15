@@ -23,6 +23,7 @@ first. Stop streaming commands with `Ctrl+C`.
 | [Watch a VLAN name for changes](cisco.md#cisco-vlan-name-on-change) | on-change |
 | [Snapshot interface admin status](cisco.md#cisco-interface-once-snapshot) | ONCE |
 | [Poll an interface CPU flag](cisco.md#cisco-interface-cpu-flag-poll) | POLL |
+| [Sample memory statistics](cisco.md#cisco-memory-statistics-sample) | sample |
 
 ### OpenConfig — [openconfig.md](openconfig.md)
 

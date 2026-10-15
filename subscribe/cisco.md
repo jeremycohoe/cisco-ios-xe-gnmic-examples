@@ -163,3 +163,41 @@ poll). Full capture:
 **Verify:** each poll returns the current `cpu` flag for the keyed interface.
 
 **Status:** Verified on C9300 / IOS XE 26.02.1 / 2026-10-14.
+
+---
+
+## Cisco memory statistics (SAMPLE)
+
+**Goal:** Stream memory pool statistics at a fixed interval.
+
+```bash
+gnmi subscribe \
+  --path 'rfc7951:/Cisco-IOS-XE-memory-oper:memory-statistics' \
+  --mode stream \
+  --stream-mode sample \
+  --sample-interval 5s \
+  --encoding json_ietf
+```
+
+**Observed response** (initial update, sync, then repeated 5s samples with full
+values for the `Processor`, `reserve Processor`, and `lsmpi_io` pools). Full
+capture:
+[captures/memory-oper-sample.ndjson](../captures/memory-oper-sample.ndjson).
+
+```json
+{"source":"<DEVICE_ADDRESS>:9339","time":"2026-10-14T19:31:46.834721-07:00","updates":[{"Path":"rfc7951:Cisco-IOS-XE-memory-oper:memory-statistics","values":{"Cisco-IOS-XE-memory-oper:memory-statistics":{"memory-statistic":[{"name":"Processor","total-memory":"1331335788","used-memory":"376679760","free-memory":"954656028"}]}}}]}
+{"sync-response":true}
+```
+
+**Change these fields:**
+- `--sample-interval` — the sampling period.
+
+**Verify:** each sample returns the `memory-statistic` list with byte counters.
+
+> **Device note:** this path returned **no values** (timestamp-only
+> notifications) on the primary C9300 / IOS XE 26.02.1 used elsewhere in this
+> guide. It was verified value-bearing on a second lab unit, a **C9300-24UX /
+> IOS XE 26.1**. Streaming support for operational trees is release-specific;
+> confirm on your device.
+
+**Status:** Verified on C9300-24UX / IOS XE 26.1 / 2026-10-14.

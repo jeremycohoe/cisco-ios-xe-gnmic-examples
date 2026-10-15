@@ -45,6 +45,7 @@ response.
 | Subscribe ON_CHANGE | Cisco VLAN-oper VLAN 899 name | Verified | [subscribe/cisco.md](../subscribe/cisco.md#cisco-vlan-name-on-change); initial sync + change event; `captures/vlan-onchange-sync.ndjson`, `captures/vlan-onchange-event.ndjson` |
 | Subscribe ON_CHANGE | Cisco interfaces-oper `admin-status` | Verified | [subscribe/cisco.md](../subscribe/cisco.md#cisco-interface-on-change-shutno-shut); `captures/interface-onchange-shut-no-shut.ndjson` |
 | Subscribe POLL | OpenConfig interface `state/cpu` | Verified | [subscribe/cisco.md](../subscribe/cisco.md#cisco-interface-cpu-flag-poll); `captures/interfaces-oper-poll.ndjson` |
+| Subscribe SAMPLE | Cisco memory-oper `memory-statistics` | Verified (C9300-24UX / 26.1) | [subscribe/cisco.md](../subscribe/cisco.md#cisco-memory-statistics-sample); `captures/memory-oper-sample.ndjson`; returned no values on the primary C9300 / 26.02.1 |
 
 ## Not collected or inconclusive
 
@@ -54,8 +55,7 @@ These are tracked here but intentionally not shown as examples. See
 | Operation | Model/path | Status | Reason |
 |---|---|---|---|
 | Set Delete | Cisco native VLAN name | Not collected | Would remove the lab VLAN 899 |
-| Subscribe SAMPLE | Cisco memory-oper | No data values | Timestamp-only notifications, re-confirmed over ~2 min; capture removed |
-| Subscribe TARGET_DEFINED | Cisco interfaces-oper `admin-status` | No data | No values at all (not even an initial update) over a ~2-min window on 2026-10-14; use sample/on_change |
+| Subscribe TARGET_DEFINED | Cisco interfaces-oper `admin-status` | No data | No values at all (not even an initial update); confirmed on two units (C9300 / 26.02.1 and C9300-24UX / 26.1); use sample/on_change |
 | Set | gNMI cfg secure-port, MDT cfg, NTP config, other `-cfg` | Not collected | Need an exact approved path/value before any live Set |
 
 ## Subscription support from the device's MDT capability model

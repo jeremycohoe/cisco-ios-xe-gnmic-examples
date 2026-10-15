@@ -57,7 +57,7 @@ Verify → Rollback** (writes only).
 | `Cisco-IOS-XE-interfaces-oper` | `interfaces/interface[name=<if>]/admin-status` | ON_CHANGE | ✅ [shut/no-shut events](subscribe/cisco.md#cisco-interface-on-change-shutno-shut) |
 | `openconfig-interfaces` | `interfaces/interface[name=<if>]/state/cpu` | POLL | ✅ [CPU flag poll](subscribe/cisco.md#cisco-interface-cpu-flag-poll) |
 | `Cisco-IOS-XE-vlan-oper` | `vlans/vlan[id=<n>]/name` | ON_CHANGE | ✅ [VLAN name change](subscribe/cisco.md#cisco-vlan-name-on-change) |
-| `Cisco-IOS-XE-memory-oper` | `memory-statistics` | SAMPLE | ❌ [no values](docs/limitations.md#subscribe-operations) |
+| `Cisco-IOS-XE-memory-oper` | `memory-statistics` | SAMPLE | ✅ [memory statistics](subscribe/cisco.md#cisco-memory-statistics-sample) |
 | `Cisco-IOS-XE-interfaces-oper` | `interfaces/interface[name=<if>]/admin-status` | TARGET_DEFINED | ❌ [no data](docs/limitations.md#subscribe-operations) |
 
 Placeholders: `<Type>` = native interface type (e.g. `TwoGigabitEthernet`);
