@@ -67,6 +67,17 @@ Verify → Rollback** (writes only).
 | Multi-path Subscribe | Several leaves streamed in one subscription | ✅ [subscribe/cisco.md](subscribe/cisco.md#multi-path-subscribe) |
 | Encodings (`json_ietf` / `json` / `proto`) | Request a different wire encoding on Get or Subscribe | ✅ [recipe](get/cisco.md#encodings-proto-and-json) · [support matrix](docs/model-inventory.md#verified-operation--encoding-support) |
 
+### Encoding support (operation × encoding)
+
+Verified live on C9300-24UX / IOS XE 26.1. Pass `--encoding` to choose; recipes
+default to `json_ietf`. Details: [get/cisco.md — Encodings](get/cisco.md#encodings-proto-and-json).
+
+| Operation | `json_ietf` | `json` | `proto` |
+|---|---|---|---|
+| **Get** | ✅ | ✅ | ✅ |
+| **Subscribe** (sample) | ✅ | ✅ | ✅ |
+| **Set** | ✅ (typed values) | not exercised | not exercised |
+
 Placeholders: `<Type>` = native interface type (e.g. `TwoGigabitEthernet`);
 `<if>` = full interface name/key; `<n>` = VLAN ID; `<id>` = list key. All
 XPaths use the `rfc7951:` / `openconfig:` origin shown in each recipe.
